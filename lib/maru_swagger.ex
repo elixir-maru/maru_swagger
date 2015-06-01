@@ -6,13 +6,9 @@ defmodule MaruSwagger do
     Plug.Router.Utils.split(at)
   end
 
-  if Mix.env == :dev do
-    def call(%Plug.Conn{path_info: path}=conn, path) do
-      header "access-control-allow-origin", "*"
-      generate |> json
-    end
-  else
-    IO.puts "\e[1;37mWarning: MaruSwagger is disabled. MaruSwagger is only works on :dev.\e[0m"
+  def call(%Plug.Conn{path_info: path}=conn, path) do
+    header "access-control-allow-origin", "*"
+    generate |> json
   end
 
   def call(conn, _) do
