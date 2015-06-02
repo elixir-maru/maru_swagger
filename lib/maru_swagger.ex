@@ -112,6 +112,9 @@ defmodule MaruSwagger do
    |> put_in([url, String.downcase(method)], %{
         description: desc || "",
         parameters: params,
+        responses: %{
+          "200" => %{description: "ok"}
+        }
       })
     end
 
