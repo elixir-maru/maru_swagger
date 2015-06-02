@@ -7,7 +7,7 @@ MaruSwagger
 
 NOTE: `maru_swagger` is only works for `:dev`
 
-Please keep `MaurSwagger` plug out of `version` dsl.
+Please keep `MaruSwagger` plug out of `version` dsl.
 
 ```elixir
 def deps do
