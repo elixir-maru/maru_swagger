@@ -1,4 +1,7 @@
 ## Changelog
+## v0.2.1 (2015-7-20)
+* Enhancements
+  * Support Maru new version mechanism
 
 ## v0.2.0 (2015-7-11)
 * Enhancements

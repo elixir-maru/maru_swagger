@@ -19,19 +19,19 @@ defmodule MaruSwagger do
     for {mod, _} <- Maru.Config.servers do
       generate_module(mod, [], nil)
     end
- |> List.flatten
- |> Enum.sort(&(&1[:path] > &2[:path]))
- |> to_swagger
+		|> List.flatten
+		|> Enum.sort(&(&1[:path] > &2[:path]))
+		|> to_swagger
   end
 
-  defp generate_module(mod, path, version) do
-    version = version || mod.__version__
+  defp generate_module(mod, path, module_version) do
     for ep <- mod.__endpoints__ do
       params = extract_params({ep.method, ep.path, ep.param_context})
-      %{desc: ep.desc, method: ep.method, path: ep.path, params: params}
+      %{desc: ep.desc, method: ep.method, path: ep.path, params: params, version: ep.version}
     end
     ++
-    for {_, [router: m, resource: resource], _} <- mod.__routers__ do
+    for {_, [router: m, resource: resource, version: v], _} <- mod.__routers__ do
+			version = v || module_version
       generate_module(m, path ++ resource.path, version)
     end
   end
@@ -109,7 +109,7 @@ defmodule MaruSwagger do
       else
         result |> put_in([url], %{})
       end
-   |> put_in([url, String.downcase(method)], %{
+			|> put_in([url, String.downcase(method)], %{
         description: desc || "",
         parameters: params,
         responses: %{
@@ -118,10 +118,11 @@ defmodule MaruSwagger do
       })
     end
 
+    %{version: version} = List.first(list)
     [{mod, _}] = Maru.Config.servers
-    version =  mod.__version__ || "0.0.1"
+    v =  version || "0.0.1"
     %{ swagger: "2.0",
-       info: %{ version: version,
+       info: %{ version: v,
                 title: mod,
               },
        paths: paths

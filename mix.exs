@@ -19,7 +19,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ {:maru, "~> 0.4"} ]
+    [ { :maru,         git: "git@github.com:falood/maru.git"} ]
   end
 
   defp package do
