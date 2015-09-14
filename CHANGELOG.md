@@ -1,5 +1,9 @@
 ## Changelog
 
+## v0.4.0 (2015-9-14)
+* Enhancements
+  * Support Maru 0.7
+
 ## v0.3.0 (2015-8-3)
 * Enhancements
   * Support Maru 0.5
