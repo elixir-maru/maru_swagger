@@ -3,7 +3,7 @@ defmodule MaruSwagger.Mixfile do
 
   def project do
     [ app: :maru_swagger,
-      version: "0.2.0",
+      version: "0.4.0",
       elixir: "~> 1.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
