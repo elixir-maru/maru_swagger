@@ -1,6 +1,6 @@
 ## Changelog
 
-## v0.5.0-dev
+## v0.5.0 (2015-9-21)
 * Enhancements
   * Support Maru 0.8
   * Support Maru Version
