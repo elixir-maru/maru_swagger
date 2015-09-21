@@ -1,43 +1,53 @@
 defmodule MaruSwagger do
   use Maru.Middleware
+  alias Maru.Router.Endpoint
 
   def init(opts) do
-    at = Keyword.fetch!(opts, :at)
-    Plug.Router.Utils.split(at)
+    at = opts |> Keyword.fetch! :at
+    pretty = opts |> Keyword.get :pretty, false
+    {at |> Maru.Router.Path.split, pretty}
   end
 
-  def call(%Plug.Conn{path_info: path}=conn, path) do
-    header "access-control-allow-origin", "*"
-    generate |> json
-  end
-
-  def call(conn, _) do
-    conn
-  end
-
-  def generate do
-    for {mod, _} <- Maru.Config.servers do
-      generate_module(mod, [], nil)
-    end
-		|> List.flatten
-		|> Enum.sort(&(&1[:path] > &2[:path]))
-		|> to_swagger
-  end
-
-  defp generate_module(mod, path, module_version) do
-    for ep <- mod.__endpoints__ do
-      params = extract_params({ep.method, ep.path, ep.param_context})
-      %{desc: ep.desc, method: ep.method, path: ep.path, params: params, version: ep.version}
-    end
-    ++
-    for {_, [router: m, resource: resource, version: v], _} <- mod.__routers__ do
-			version = v || module_version
-      generate_module(m, path ++ resource.path, version)
+  def call(%Plug.Conn{path_info: path_info}=conn, {path, pretty}) do
+    case Maru.Router.Path.lstrip(path_info, path) do
+      {:ok, []}  ->
+        header "access-control-allow-origin", "*"
+        resp = generate |> Poison.encode!(pretty: pretty)
+        Plug.Conn.send_resp(conn, 200, resp) |> Plug.Conn.halt
+      {:ok, [v]} ->
+        header "access-control-allow-origin", "*"
+        resp = generate(v) |> Poison.encode!(pretty: pretty)
+        Plug.Conn.send_resp(conn, 200, resp) |> Plug.Conn.halt
+      nil        -> conn
     end
   end
 
-  defp extract_params({"GET", _, []}), do: []
-  defp extract_params({"GET", path, params_list}) do
+  def generate(version \\ nil) do
+    [{module, _}] = Maru.Config.servers
+      module
+   |> Maru.Builder.Routers.generate
+   |> Dict.fetch!(version)
+	 |> Enum.sort(&(&1.path > &2.path))
+   |> Enum.map(&extract_endpoint/1)
+	 |> to_swagger
+  end
+
+  defp extract_endpoint(ep) do
+    params = ep |> extract_params
+    method =
+      case ep.method do
+        {:_, [], nil} -> "MATCH"
+        m -> m
+      end
+    %{desc: ep.desc, method: method, path: ep.path, params: params, version: ep.version}
+  end
+
+  defp extract_params(%Endpoint{method: {:_, [], nil}}=ep) do
+    %{ep | method: "MATCH"} |> extract_params
+  end
+
+  defp extract_params(%Endpoint{method: "GET"}), do: []
+  defp extract_params(%Endpoint{method: "GET", path: path, param_context: params_list}) do
     for param <- params_list do
       if param.attr_name in path do
         %{ in: "path" }
@@ -53,8 +63,8 @@ defmodule MaruSwagger do
     end
   end
 
-  defp extract_params({_, _, []}), do: []
-  defp extract_params({_, path, params_list}) do
+  defp extract_params(%Endpoint{param_context: []}), do: []
+  defp extract_params(%Endpoint{path: path, param_context: params_list}) do
     {file_list, param_list} = Enum.split_while(
       params_list,
       fn(param) ->
@@ -97,12 +107,14 @@ defmodule MaruSwagger do
     end.()
   end
 
+
   defp decode_parser(parser) do
       parser |> to_string |> String.split(".") |> List.last |> String.downcase
   end
 
+
   defp to_swagger(list) do
-    paths = list |> List.foldr%{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
+    paths = list |> List.foldr %{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
       url = join_path(url_list)
       if Map.has_key? result, url do
         result
@@ -120,7 +132,7 @@ defmodule MaruSwagger do
 
     %{version: version} = List.first(list)
     [{mod, _}] = Maru.Config.servers
-    v =  version || "0.0.1"
+    v =  version
     %{ swagger: "2.0",
        info: %{ version: v,
                 title: mod,

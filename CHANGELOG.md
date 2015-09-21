@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.5.0-dev
+* Enhancements
+  * Support Maru 0.8
+  * Support Maru Version
+  * Support pretty format
+
 ## v0.4.0 (2015-9-14)
 * Enhancements
   * Support Maru 0.7

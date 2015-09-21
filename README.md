@@ -11,7 +11,7 @@ Please keep `MaruSwagger` plug out of `version` dsl.
 
 ```elixir
 def deps do
-  [ {:maru_swagger, "~> 0.1.0", only: :dev} ]
+  [ {:maru_swagger, "~> 0.5", only: :dev} ]
 end
 
 defmodule Router do
@@ -24,7 +24,7 @@ defmodule API do
 
   plug Plug.Logger
   if Mix.env == :dev do
-    plug MaruSwagger, at: "/swagger"
+    plug MaruSwagger, at: "/swagger", pretty: true
   end
 
   mount Router
@@ -38,8 +38,11 @@ open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in 
 
 ## TODO
 - [ ] unit test
-- [ ] multi version support
-- [ ] beautifier json response
+- [x] multi version support
+- [x] beautifier json response
+
+## Known issues
+- problem with `match` method
 
 ## Thanks
 
