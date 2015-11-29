@@ -11,11 +11,11 @@ defmodule MaruSwagger do
   def call(%Plug.Conn{path_info: path_info}=conn, {path, pretty}) do
     case Maru.Router.Path.lstrip(path_info, path) do
       {:ok, []}  ->
-        header "access-control-allow-origin", "*"
+        conn = conn |> Plug.Conn.put_resp_header("access-control-allow-origin", "*")
         resp = generate |> Poison.encode!(pretty: pretty)
         Plug.Conn.send_resp(conn, 200, resp) |> Plug.Conn.halt
       {:ok, [v]} ->
-        header "access-control-allow-origin", "*"
+        conn = conn |> Plug.Conn.put_resp_header("access-control-allow-origin", "*")
         resp = generate(v) |> Poison.encode!(pretty: pretty)
         Plug.Conn.send_resp(conn, 200, resp) |> Plug.Conn.halt
       nil        -> conn
