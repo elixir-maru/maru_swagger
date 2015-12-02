@@ -15,7 +15,7 @@ def deps do
 end
 
 defmodule Router do
-  version "v1", using: :accept_version_header
+  version "v1"
   ...
 end
 
