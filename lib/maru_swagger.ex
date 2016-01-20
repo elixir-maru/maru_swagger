@@ -3,41 +3,65 @@ defmodule MaruSwagger do
   alias Maru.Router.Endpoint
 
   def init(opts) do
-    at     = opts |> Keyword.fetch!(:at)
-    pretty = opts |> Keyword.get(:pretty, false)
-    {at |> Maru.Router.Path.split, pretty}
+    module_func = fn ->
+      case Maru.Config.servers do
+        [{module, _} | _] -> module
+        _                 -> raise "missing module for maru swagger"
+      end
+    end
+
+    path    = opts |> Keyword.fetch!(:at) |> Maru.Router.Path.split
+    module  = opts |> Keyword.get_lazy(:for, module_func)
+
+    prefix_func = fn ->
+      if Code.ensure_loaded?(Phoenix) do
+        phoenix_module = Module.concat(Mix.Phoenix.base(), "Router")
+        phoenix_module.__routes__ |> Enum.filter(fn r ->
+          match?(%{kind: :forward, plug: ^module}, r)
+        end)
+        |> case do
+          [%{path: p}] -> p |> String.split("/", trim: true)
+          _            -> []
+        end
+      else [] end
+    end
+    version = opts |> Keyword.get(:version, nil)
+    pretty  = opts |> Keyword.get(:pretty, false)
+    prefix  = opts |> Keyword.get_lazy(:prefix, prefix_func)
+    {path, module, version, pretty, prefix}
   end
 
-  def call(%Plug.Conn{path_info: path_info}=conn, {path, pretty}) do
+  def call(%Plug.Conn{path_info: path_info}=conn, {path, module, version, pretty, prefix}) do
     case Maru.Router.Path.lstrip(path_info, path) do
-      nil           -> conn
-      {:ok, result} ->
-        resp = result |> List.first |> generate |> Poison.encode!(pretty: pretty)
+      {:ok, []} ->
+        resp =
+          generate(module, version, prefix)
+          |> Poison.encode!(pretty: pretty)
         conn
         |> Plug.Conn.put_resp_header("access-control-allow-origin", "*")
         |> Plug.Conn.send_resp(200, resp)
         |> Plug.Conn.halt
+      _ -> conn
     end
   end
 
-  def generate(version \\ nil) do
-    [{module, _}] = Maru.Config.servers
+  def generate(module, version, prefix) do
     module
     |> Maru.Builder.Routers.generate
     |> Dict.fetch!(version)
     |> Enum.sort(&(&1.path > &2.path))
-    |> Enum.map(&extract_endpoint/1)
-    |> to_swagger
+    |> Enum.map(&extract_endpoint(&1, prefix))
+    |> to_swagger(module, version)
   end
 
-  defp extract_endpoint(ep) do
+  defp extract_endpoint(ep, prefix) do
     params = ep |> extract_params
     method =
       case ep.method do
         {:_, [], nil} -> "MATCH"
         m             -> m
       end
-    %{desc: ep.desc, method: method, path: ep.path, params: params, version: ep.version}
+    %{desc: ep.desc, method: method, path: prefix ++ ep.path, params: params, version: ep.version}
   end
 
   defp extract_params(%Endpoint{method: {:_, [], nil}}=ep) do
@@ -109,7 +133,7 @@ defmodule MaruSwagger do
   end
 
 
-  defp to_swagger(list) do
+  defp to_swagger(list, module, version) do
     paths = list |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
       url = join_path(url_list)
       if Map.has_key? result, url do
@@ -126,13 +150,11 @@ defmodule MaruSwagger do
       })
     end)
 
-    %{version: version} = List.first(list)
-    [{mod, _}] = Maru.Config.servers
-    v = version
+    "Elixir." <> m = module |> to_string
     %{ swagger: "2.0",
        info: %{
-         version: v,
-         title: mod,
+         version: version,
+         title: "Swagger API for #{m}",
        },
        paths: paths
      }

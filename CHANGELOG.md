@@ -1,4 +1,12 @@
 ## Changelog
+## v0.7.0-dev
+* Enhancements
+  * Support multiple version
+  * Support maru router forwarded by Phoenix
+
+## v0.6.0 (2015-11-29)
+* Enhancements
+  * Support Maru 0.9
 
 ## v0.5.0 (2015-9-21)
 * Enhancements

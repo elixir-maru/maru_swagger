@@ -24,7 +24,10 @@ defmodule API do
 
   plug Plug.Logger
   if Mix.env == :dev do
-    plug MaruSwagger, at: "/swagger", pretty: true
+    plug MaruSwagger,
+      version: "v1",
+      at:      "/swagger/v1",
+      pretty:  true
   end
 
   mount Router
@@ -40,9 +43,6 @@ open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in 
 - [ ] unit test
 - [x] multi version support
 - [x] beautifier json response
-
-## Known issues
-- problem with `match` method
 
 ## Thanks
 
