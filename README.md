@@ -34,9 +34,9 @@ defmodule API do
 end
 ```
 
-and then you can get json response from `curl http://127.0.0.1:4000/swagger`.
+and then you can get json response from `curl http://127.0.0.1:4000/swagger/v1`.
 
-open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in `http://127.0.0.1:4000/swagger` and enjoy maru_swagger.
+open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in `http://127.0.0.1:4000/swagger/v1` and enjoy maru_swagger.
 
 
 ## TODO
