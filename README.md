@@ -11,7 +11,7 @@ Please keep `MaruSwagger` plug out of `version` dsl.
 
 ```elixir
 def deps do
-  [ {:maru_swagger, "~> 0.6", only: :dev} ]
+  [ {:maru_swagger, "~> 0.7", only: :dev} ]
 end
 
 defmodule Router do
