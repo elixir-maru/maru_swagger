@@ -90,8 +90,8 @@ defmodule MaruSwagger do
         end
       )
 
-    p = for %Maru.Router.Param{}=param <- param_list do
-      {param.attr_name, %{type: decode_parser(param.parser)}}
+    p = for %Maru.Router.Param{attr_name: attr_name, parser: parser} <- param_list do
+      {attr_name, %{type: decode_parser(parser)}}
     end |> Enum.into(%{})
 
     f = for param <- file_list do
@@ -121,8 +121,8 @@ defmodule MaruSwagger do
       if f == [] do [r] else f end
     end.()
     |> fn r ->
-      if Enum.any? path, &is_atom/1 do
-        r ++ path |> Enum.filter(&is_atom/1) |> Enum.map(&(%{name: &1, in: "path", required: true, type: "string"}))
+      if Enum.any?(path, &is_atom/1) do
+        r ++ (path |> Enum.filter(&is_atom/1) |> Enum.map(&(%{name: &1, in: "path", required: true, type: "string"})))
       else r end
     end.()
   end
