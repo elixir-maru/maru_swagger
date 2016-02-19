@@ -90,7 +90,7 @@ defmodule MaruSwagger do
         end
       )
 
-    p = for param <- param_list do
+    p = for %Maru.Router.Param{}=param <- param_list do
       {param.attr_name, %{type: decode_parser(param.parser)}}
     end |> Enum.into(%{})
 
