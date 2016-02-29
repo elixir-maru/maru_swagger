@@ -1,7 +1,6 @@
 defmodule MaruSwagger.ResponseFormatterTest do
   use ExSpec, async: true
   doctest MaruSwagger.ResponseFormatter
-  import TestHelper
 
 
   describe "basic test" do
@@ -20,11 +19,6 @@ defmodule MaruSwagger.ResponseFormatterTest do
     defmodule BasicTest.Api do
       use Maru.Router
       mount MaruSwagger.ResponseFormatterTest.BasicTest.Homepage
-      rescue_from :all do
-        conn
-        |> put_status(500)
-        |> text("Server Error")
-      end
     end
 
     @swagger_docs MaruSwagger.generate(MaruSwagger.ResponseFormatterTest.BasicTest.Api, nil, ["/"])

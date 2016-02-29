@@ -15,15 +15,23 @@ defmodule MaruSwagger.ResponseFormatter do
         }
       })
     end)
+    wrap_in_swagger_info(module, version, paths)
+  end
 
+  defp wrap_in_swagger_info(module, version, paths) do
+    %{
+      swagger: "2.0",
+      info: %{
+        version: version,
+        title: "Swagger API for #{elixir_module_name(module)}",
+      },
+      paths: paths
+    }
+  end
+
+  defp elixir_module_name(module) do
     "Elixir." <> m = module |> to_string
-    %{ swagger: "2.0",
-       info: %{
-         version: version,
-         title: "Swagger API for #{m}",
-       },
-       paths: paths
-     }
+    m
   end
 
   defp join_path(path) do
