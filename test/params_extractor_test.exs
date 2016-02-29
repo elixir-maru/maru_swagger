@@ -30,8 +30,8 @@ defmodule MaruSwagger.ParamsExtractorTest do
           %{description: "desc", in: "body", name: "body", required: false,
             schema: %{
               properties: %{
-                email: %{type: "string", required: true},
-                name: %{type: "string", required: true}
+                email: %{description: "", required: true, type: "string"},
+                name: %{description: "", required: true, type: "string"}
               }
             }
           }

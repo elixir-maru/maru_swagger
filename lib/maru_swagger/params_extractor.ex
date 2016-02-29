@@ -56,10 +56,11 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   defp convert_maru_params_to_swagger_params(param_list_extra) do
-    for %Maru.Router.Param{attr_name: attr_name, parser: parser, required: required} <- param_list_extra do
+    for %Maru.Router.Param{attr_name: attr_name, parser: parser, required: required, desc: desc} <- param_list_extra do
       { attr_name, %{
           type: decode_parser(parser),
-          required: required
+          required: required,
+          description: desc || "",
         }
       }
     end |> Enum.into(%{}) #|> IO.inspect
