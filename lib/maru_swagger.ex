@@ -5,7 +5,7 @@ defmodule MaruSwagger do
     module_func = fn ->
       case Maru.Config.servers do
         [{module, _} | _] -> module
-        _                 -> raise "missing module for maru swagger"
+        _                 -> raise "missing configured module for Maru in config.exs (MaruSwagger depends on it!)"
       end
     end
 
