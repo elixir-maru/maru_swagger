@@ -1,4 +1,5 @@
 defmodule MaruSwagger.ResponseFormatter do
+  # TODO too cryptic, split up into smaller functions...
   def format(list, module, version) do
     paths = list |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
       url = join_path(url_list)
