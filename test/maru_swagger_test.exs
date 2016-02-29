@@ -32,8 +32,8 @@ defmodule MaruSwaggerTest do
     it "includes the required params" do
       @swagger_docs |>
         assert_route_info("",
-          %{"get" => %{description: "hello world action", parameters: [],
-            responses: %{"200" => %{description: "ok"}}}}
+          %{"get" => %{description: "hello world action", parameters: [%{description: "", in: "query", name: :id, required: true, type: "integer"}],
+               responses: %{"200" => %{description: "ok"}}}}
         )
     end
   end

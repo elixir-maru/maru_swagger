@@ -4,7 +4,6 @@ defmodule MaruSwagger.ParamsExtractor do
     %{ep | method: "MATCH"} |> extract_params
   end
 
-  def extract_params(%Endpoint{method: "GET"}), do: []
   def extract_params(%Endpoint{method: "GET", path: path, param_context: params_list}) do
     for param <- params_list do
       %{ name:        param.attr_name,
@@ -15,6 +14,7 @@ defmodule MaruSwagger.ParamsExtractor do
       }
     end
   end
+  def extract_params(%Endpoint{method: "GET"}), do: []
 
   def extract_params(%Endpoint{param_context: []}), do: []
   def extract_params(%Endpoint{path: path, param_context: params_list}) do
