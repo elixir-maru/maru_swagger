@@ -50,53 +50,21 @@ defmodule MaruSwagger do
     |> Dict.fetch!(version)
     |> Enum.sort(&(&1.path > &2.path))
     |> Enum.map(&extract_endpoint(&1, prefix))
-    |> to_swagger(module, version)
+    |> MaruSwagger.ResponseFormatter.format(module, version)
   end
 
   defp extract_endpoint(ep, prefix) do
     params = ep |> MaruSwagger.ParamsExtractor.extract_params
-    method =
-      case ep.method do
-        {:_, [], nil} -> "MATCH"
-        m             -> m
-      end
-    %{desc: ep.desc, method: method, path: prefix ++ ep.path, params: params, version: ep.version}
-  end
-
-  defp to_swagger(list, module, version) do
-    paths = list |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
-      url = join_path(url_list)
-      if Map.has_key? result, url do
-        result
-      else
-        result |> put_in([url], %{})
-      end
-      |> put_in([url, String.downcase(method)], %{
-        description: desc || "",
-        parameters: params,
-        responses: %{
-          "200" => %{description: "ok"}
-        }
-      })
-    end)
-
-    "Elixir." <> m = module |> to_string
-    %{ swagger: "2.0",
-       info: %{
-         version: version,
-         title: "Swagger API for #{m}",
-       },
-       paths: paths
-     }
-  end
-
-  defp join_path(path) do
-    [ "/" | for i <- path do
-      cond do
-        is_atom(i) -> "{#{i}}"
-        is_binary(i) -> i
-        true -> raise "unknow path type"
-      end
-    end ] |> Path.join
+    method = case ep.method do
+      {:_, [], nil} -> "MATCH"
+      m             -> m
+    end
+    %{
+      desc:    ep.desc,
+      method:  method,
+      path:    prefix ++ ep.path,
+      params:  params,
+      version: ep.version
+    }
   end
 end
