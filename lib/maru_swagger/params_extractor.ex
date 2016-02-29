@@ -17,18 +17,10 @@ defmodule MaruSwagger.ParamsExtractor do
   def extract_params(%Endpoint{method: "GET"}), do: []
 
   def extract_params(%Endpoint{param_context: []}), do: []
-  def extract_params(%Endpoint{path: path, param_context: params_list}) do
-    {file_list, param_list} =
-      Enum.split_while(
-        params_list,
-        fn(param) ->
-          decode_parser(param.parser) == "file"
-        end
-      )
 
-    p = for %Maru.Router.Param{attr_name: attr_name, parser: parser} <- param_list do
-      {attr_name, %{type: decode_parser(parser)}}
-    end |> Enum.into(%{})
+  def extract_params(%Endpoint{path: path, param_context: params_list}) do
+    {file_list, param_list_extra} = split_file_list(params_list) #FIXME find a better name
+    p = convert_maru_params_to_swagger_params(param_list_extra)  #FIXME find a better name
 
     f = for param <- file_list do
       %{ name:        param.attr_name,
@@ -63,7 +55,21 @@ defmodule MaruSwagger.ParamsExtractor do
     end.()
   end
 
+  defp convert_maru_params_to_swagger_params(param_list_extra) do
+    for %Maru.Router.Param{attr_name: attr_name, parser: parser, required: required} <- param_list_extra do
+      { attr_name, %{
+          type: decode_parser(parser),
+          required: required
+        }
+      }
+    end |> Enum.into(%{}) #|> IO.inspect
+  end
+
   defp decode_parser(parser) do
     parser |> to_string |> String.split(".") |> List.last |> String.downcase
+  end
+
+  defp split_file_list(params_list) do
+     Enum.split_while(params_list, fn(param) -> decode_parser(param.parser) == "file" end)
   end
 end
