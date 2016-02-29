@@ -13,18 +13,14 @@ defmodule MaruSwaggerTest do
         requires :id, type: Integer
       end
       get "/" do
-        %{ hello: :world }
+        conn |> json(%{ hello: :world })
       end
     end
+
 
     defmodule BasicTest.Api do
       use Maru.Router
       mount MaruSwaggerTest.BasicTest.Homepage
-      rescue_from :all do
-        conn
-        |> put_status(500)
-        |> text("Server Error")
-      end
     end
 
     @swagger_docs MaruSwagger.generate(MaruSwaggerTest.BasicTest.Api, nil, ["/"])
