@@ -12,7 +12,16 @@ defmodule MaruSwagger.ResponseFormatterTest do
         requires :id, type: Integer
       end
       get "/" do
-        %{ hello: :world }
+        conn |> json(%{ hello: :world })
+      end
+
+      desc "creates res1"
+      params do
+        requires :name, type: String
+        requires :email, type: String
+      end
+      post "/res1" do
+        conn |> json(params)
       end
     end
 
