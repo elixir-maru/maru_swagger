@@ -12,7 +12,7 @@ defmodule MaruSwaggerTest do
       params do
         requires :id, type: Integer
       end
-      get do
+      get "/" do
         %{ hello: :world }
       end
     end
@@ -29,7 +29,7 @@ defmodule MaruSwaggerTest do
 
     @swagger_docs MaruSwagger.generate(MaruSwaggerTest.BasicTest.Api, nil, ["/"])
 
-    it "works" do
+    it "includes the required params" do
       @swagger_docs |>
         assert_route_info("",
           %{"get" => %{description: "hello world action", parameters: [],
