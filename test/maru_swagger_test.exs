@@ -1,6 +1,7 @@
 defmodule MaruSwaggerTest do
   use ExSpec, async: true
   doctest MaruSwagger
+  import TestHelper
 
 
   describe "basic test" do
@@ -26,14 +27,14 @@ defmodule MaruSwaggerTest do
       end
     end
 
+    @swagger_docs MaruSwagger.generate(MaruSwaggerTest.BasicTest.Api, nil, ["/"])
 
     it "works" do
-      res = MaruSwagger.generate(MaruSwaggerTest.BasicTest.Api, nil, ["/"])
-      expected = %{info: %{title: "Swagger API for MaruSwaggerTest.BasicTest.Api", version: nil},
-  paths: %{"" => %{"get" => %{description: "hello world action", parameters: [],
-        responses: %{"200" => %{description: "ok"}}}}}, swagger: "2.0"}
-
-      assert res == expected
+      @swagger_docs |>
+        assert_route_info("",
+          %{"get" => %{description: "hello world action", parameters: [],
+            responses: %{"200" => %{description: "ok"}}}}
+        )
     end
   end
 end
