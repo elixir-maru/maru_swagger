@@ -50,3 +50,4 @@ open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in 
 ## Thanks
 
 * [Cifer](https://github.com/Cifer-Y)
+* [Roman Heinrich](https://github.com/mindreframer)
