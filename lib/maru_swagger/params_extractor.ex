@@ -1,4 +1,41 @@
 defmodule MaruSwagger.ParamsExtractor do
+  defmodule NonGetParamsGenerator do
+    def generate(file_param_list, param_list, path) do
+      default_body
+      |> adjust_param_list(param_list)
+      |> adjust_file_param_list(file_param_list)
+      |> adjust_pathes(path)
+    end
+
+    defp default_body do
+      %{ name: "body",
+         in: "body",
+         description: "desc",
+         required: false}
+    end
+
+    defp adjust_param_list(r, param_list) do
+      if param_list == %{} do
+        r
+      else
+        r
+        |> put_in([:schema], %{})
+        |> put_in([:schema, :properties], param_list)
+      end
+    end
+
+    defp adjust_file_param_list(r, []), do: [r]
+    defp adjust_file_param_list(_r, file_param_list), do: file_param_list
+
+    defp adjust_pathes(r, path) do
+      if Enum.any?(path, &is_atom/1) do
+        r ++ (path |> Enum.filter(&is_atom/1) |> Enum.map(&(%{name: &1, in: "path", required: true, type: "string"})))
+      else
+        r
+      end
+    end
+  end
+
   alias Maru.Router.Endpoint
   def extract_params(%Endpoint{method: {:_, [], nil}}=ep) do
     %{ep | method: "MATCH"} |> extract_params
@@ -21,34 +58,7 @@ defmodule MaruSwagger.ParamsExtractor do
     {file_param_list, param_list} = split_file_list_and_rest(param_context)
     file_param_list_swagger       = convert_file_param_list_to_swagger(file_param_list)
     param_list_swagger            = convert_param_list_to_swagger(param_list)
-    generate_swagger_non_get_data(file_param_list_swagger, param_list_swagger, path)
-  end
-
-  def generate_swagger_non_get_data(file_param_list_swagger, param_list_swagger, path) do
-    %{ name: "body",
-       in: "body",
-       description: "desc",
-       required: false,
-     }
-    |> fn r ->
-      if param_list_swagger == %{} do
-        r
-      else
-        r
-        |> put_in([:schema], %{})
-        |> put_in([:schema, :properties], param_list_swagger)
-      end
-    end.()
-    |> fn r ->
-      if file_param_list_swagger == [] do [r] else file_param_list_swagger end
-    end.()
-    |> fn r ->
-      if Enum.any?(path, &is_atom/1) do
-        r ++ (path |> Enum.filter(&is_atom/1) |> Enum.map(&(%{name: &1, in: "path", required: true, type: "string"})))
-      else
-        r
-      end
-    end.()
+    NonGetParamsGenerator.generate(file_param_list_swagger, param_list_swagger, path)
   end
 
   defp convert_param_list_to_swagger(param_list_extra) do
