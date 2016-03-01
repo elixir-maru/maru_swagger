@@ -1,5 +1,11 @@
 language: elixir
-elixir: 1.2.0
-sotp_release:
-  - 18.0
-script: "MIX_ENV=test mix local.hex --force && MIX_ENV=test mix do deps.get, test"
+elixir:
+  - 1.0.5
+  - 1.1.1
+  - 1.2.3
+sudo: false
+notifications:
+  recipients:
+    - self@falood.me
+before_script:
+  - mix deps.get --only test
