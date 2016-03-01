@@ -5,35 +5,37 @@ defmodule MaruSwagger.ParamsExtractorTest do
 
 
   describe "POST" do
-    @endpoint_info %Maru.Router.Endpoint{block: {:|>, [line: 25],
-      [{:conn, [line: 25], nil},
-       {:json, [line: 25], [{:params, [line: 25], nil}]}]}, desc: "creates res1",
-     helpers: [], method: "POST",
-     param_context: [%Maru.Router.Param{attr_name: :name, children: [],
-       coerce_with: nil, default: nil, desc: nil, parser: :string, required: true,
-       source: nil, validators: []},
-      %Maru.Router.Param{attr_name: :email, children: [], coerce_with: nil,
-       default: nil, desc: nil, parser: :string, required: true, source: nil,
-       validators: []}], path: ["res1"], version: nil}
+    defmodule BasicPostApi do
+      use Maru.Router
+      desc "res1 create"
+      params do
+        requires :name, type: :string
+        requires :email, type: :string
+      end
+      def pc, do: @param_context
+      post "/res1" do
+        conn |> json(params)
+      end
+    end
 
-
-    it "includes basic information for swagger (title, API version, Swagger version)" do
+    it "works with basic POST params" do
+      endpoint_info = endpoint_from_module(BasicPostApi, "POST", ["res1"])
       expected = [
-          %{description: "desc", in: "body", name: "body", required: false,
-            schema: %{
-              properties: %{
-                email: %{description: "", required: true, type: "string"},
-                name: %{description: "", required: true, type: "string"}
-              }
+        %{description: "desc", in: "body", name: "body", required: false,
+          schema: %{
+            properties: %{
+              email: %{description: "", required: true, type: "string"},
+              name: %{description: "", required: true, type: "string"}
             }
           }
+        }
       ]
-      assert extract_params(@endpoint_info) == expected
+      assert extract_params(endpoint_info) == expected
     end
   end
 
 
-  describe "more extensive example" do
+  describe "more extensive POST example" do
     defmodule BasicTest.Homepage do
       use Maru.Router
       desc "root page"
