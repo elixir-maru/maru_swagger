@@ -19,10 +19,10 @@ defmodule TestHelper do
       # TestHelper.endpoint_from_module(BasicTest.Homepage, "v1", "POST", ["complex"])
   """
   def endpoint_from_module(module, method, path_list) do
-    endpoint_from_module(module, nil, method, path_list)
+    endpoint_from_module(module, method, path_list, nil)
   end
 
-  def endpoint_from_module(module, version, method, path_list) do
+  def endpoint_from_module(module, method, path_list, version) do
     module
       |> Maru.Builder.Routers.generate
       |> Map.get(version) # ?? this is the missing version I guess...
