@@ -1,7 +1,6 @@
 defmodule MaruVersioningTest do
   use ExSpec, async: true
   doctest MaruSwagger
-  import TestHelper
 
   describe "basic test" do
     defmodule BasicTest.Homepage do

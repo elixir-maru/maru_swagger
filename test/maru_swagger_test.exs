@@ -41,6 +41,13 @@ defmodule MaruSwaggerTest do
       opts |> MaruSwagger.init
     end
 
+
+    it "param :for -> raises if not provided and not configured in config.exs" do
+      assert_raise RuntimeError, "missing configured module for Maru in config.exs (MaruSwagger depends on it!)", fn ->
+        init(at: "/swagger/v1")
+      end
+    end
+
     it "requires :at for mounting point" do
       assert %MaruSwagger.ConfigStruct{
         module: MaruSwaggerTest.BasicTest.Api,

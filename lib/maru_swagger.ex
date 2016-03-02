@@ -11,17 +11,23 @@ defmodule MaruSwagger do
     ]
 
     def from_opts(opts) do
-      module_func = fn ->
-        case Maru.Config.servers do
-          [{module, _} | _] -> module
-          _                 -> raise "missing configured module for Maru in config.exs (MaruSwagger depends on it!)"
-        end
-      end
-
       path    = opts |> Keyword.fetch!(:at) |> Maru.Router.Path.split
       module  = opts |> Keyword.get_lazy(:for, module_func)
+      version = opts |> Keyword.get(:version, nil)
+      pretty  = opts |> Keyword.get(:pretty, false)
+      prefix  = opts |> Keyword.get_lazy(:prefix, prefix_func(module))
 
-      prefix_func = fn ->
+      %ConfigStruct{
+        path: path,
+        module: module,
+        version: version,
+        pretty: pretty,
+        prefix: prefix
+      }
+    end
+
+    defp prefix_func(module) do
+      fn ->
         if Code.ensure_loaded?(Phoenix) do
           phoenix_module = Module.concat(Mix.Phoenix.base(), "Router")
           phoenix_module.__routes__ |> Enum.filter(fn r ->
@@ -31,19 +37,19 @@ defmodule MaruSwagger do
             [%{path: p}] -> p |> String.split("/", trim: true)
             _            -> []
           end
-        else [] end
+        else
+          []
+        end
       end
-      version = opts |> Keyword.get(:version, nil)
-      pretty  = opts |> Keyword.get(:pretty, false)
-      prefix  = opts |> Keyword.get_lazy(:prefix, prefix_func)
+    end
 
-      %ConfigStruct{
-        path: path,
-        module: module,
-        version: version,
-        pretty: pretty,
-        prefix: prefix
-      }
+    defp module_func do
+      fn ->
+        case Maru.Config.servers do
+          [{module, _} | _] -> module
+          _                 -> raise "missing configured module for Maru in config.exs (MaruSwagger depends on it!)"
+        end
+      end
     end
   end
 
