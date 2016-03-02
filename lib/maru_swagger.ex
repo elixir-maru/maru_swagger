@@ -10,7 +10,7 @@ defmodule MaruSwagger do
     case Maru.Router.Path.lstrip(path_info, config.path) do
       {:ok, []} ->
         resp =
-          generate(config.module, config.version, config.prefix)
+          generate(config)
           |> Poison.encode!(pretty: config.pretty)
         conn
         |> Plug.Conn.put_resp_header("access-control-allow-origin", "*")
@@ -21,12 +21,16 @@ defmodule MaruSwagger do
   end
 
   def generate(module, version, prefix) do
-    module
+    %ConfigStruct{module: module, version: version, prefix: prefix} |> generate
+  end
+
+  def generate(config = %ConfigStruct{}) do
+    config.module
     |> Maru.Builder.Routers.generate
-    |> Dict.fetch!(version)
+    |> Dict.fetch!(config.version)
     |> Enum.sort(&(&1.path > &2.path))
-    |> Enum.map(&extract_endpoint(&1, prefix))
-    |> MaruSwagger.ResponseFormatter.format(module, version)
+    |> Enum.map(&extract_endpoint(&1, config.prefix))
+    |> MaruSwagger.ResponseFormatter.format(config)
   end
 
   defp extract_endpoint(ep, prefix) do

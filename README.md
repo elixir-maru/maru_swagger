@@ -36,7 +36,7 @@ defmodule API do
       swagger_inject: [            # (optional) this will be directly injected into the root Swagger JSON
         host: "myapi.com",
         basePath: "/",
-        schemes : [ "http" ],
+        schemes:  [ "http" ],
         consumes: [ "application/json" ],
         produces: [
           "application/json",
