@@ -42,7 +42,13 @@ defmodule MaruSwaggerTest do
     end
 
     it "requires :at for mounting point" do
-      assert {["swagger", "v1"], MaruSwaggerTest.BasicTest.Api, nil, false, [] } == init(
+      assert %MaruSwagger.ConfigStruct{
+        module: MaruSwaggerTest.BasicTest.Api,
+        path: ["swagger", "v1"],
+        prefix: [],
+        pretty: false,
+        version: nil
+      } == init(
         at: "swagger/v1",
         for: BasicTest.Api
       )
@@ -55,7 +61,13 @@ defmodule MaruSwaggerTest do
     end
 
     it "accepts :version for specified version" do
-      assert {["swagger", "v1"], MaruSwaggerTest.BasicTest.Api, "v1", false, [] } == init(
+      assert %MaruSwagger.ConfigStruct{
+        module: MaruSwaggerTest.BasicTest.Api,
+        path: ["swagger", "v1"],
+        prefix: [],
+        pretty: false,
+        version: "v1"
+      } == init(
         at: "swagger/v1",
         version: "v1",
         for: BasicTest.Api
@@ -63,7 +75,13 @@ defmodule MaruSwaggerTest do
     end
 
     it "accepts :pretty for JSON output" do
-      assert {["swagger", "v1"], MaruSwaggerTest.BasicTest.Api, "v1", true, [] } == init(
+      assert %MaruSwagger.ConfigStruct{
+        module: MaruSwaggerTest.BasicTest.Api,
+        path: ["swagger", "v1"],
+        prefix: [],
+        pretty: true,
+        version: "v1"
+      } == init(
         at: "swagger/v1",
         version: "v1",
         pretty: true,
@@ -72,11 +90,17 @@ defmodule MaruSwaggerTest do
     end
 
     it "accepts :prefix to prepend to URLs" do
-      assert {["swagger", "v1"], MaruSwaggerTest.BasicTest.Api, "v1", true, "/longish/prefix" } == init(
+      assert %MaruSwagger.ConfigStruct{
+          module: MaruSwaggerTest.BasicTest.Api,
+          path: ["swagger", "v1"],
+          prefix: ["longish", "prefix"],
+          pretty: true,
+          version: "v1"
+        } == init(
         at: "swagger/v1",
         version: "v1",
         pretty: true,
-        prefix: "/longish/prefix",
+        prefix: ["longish", "prefix"],
         for: BasicTest.Api
       )
     end
