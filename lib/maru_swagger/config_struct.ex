@@ -4,22 +4,25 @@ defmodule MaruSwagger.ConfigStruct do
     :module,         # [atom]    Maru API module
     :version,        # [string]  version
     :pretty,         # [boolean] should JSON output be prettified?
-    :prefix          # [list]    the param to prepent to URLS in the Swagger JSON
+    :prefix,         # [list]    the param to prepent to URLS in the Swagger JSON
+    :swagger_inject  # [keyword list] key-values to inject directly into root of Swagger JSON
   ]
 
   def from_opts(opts) do
-    path    = opts |> Keyword.fetch!(:at) |> Maru.Router.Path.split
-    module  = opts |> Keyword.get_lazy(:for, module_func)
-    version = opts |> Keyword.get(:version, nil)
-    pretty  = opts |> Keyword.get(:pretty, false)
-    prefix  = opts |> Keyword.get_lazy(:prefix, prefix_func(module))
+    path           = opts |> Keyword.fetch!(:at) |> Maru.Router.Path.split
+    module         = opts |> Keyword.get_lazy(:for, module_func)
+    version        = opts |> Keyword.get(:version, nil)
+    pretty         = opts |> Keyword.get(:pretty, false)
+    prefix         = opts |> Keyword.get_lazy(:prefix, prefix_func(module))
+    swagger_inject = opts |> Keyword.get(:swagger_inject, []) |> check_swagger_inject_keys
 
     %__MODULE__{
       path: path,
       module: module,
       version: version,
       pretty: pretty,
-      prefix: prefix
+      prefix: prefix,
+      swagger_inject: swagger_inject,
     }
   end
 
@@ -38,6 +41,15 @@ defmodule MaruSwagger.ConfigStruct do
         []
       end
     end
+  end
+
+  defp check_swagger_inject_keys(swagger_inject) do
+    swagger_inject
+    |> Enum.filter(fn {k,_} -> k in allowed_swagger_fields end)
+  end
+
+  defp allowed_swagger_fields do
+    [:host, :basePath, :schemes, :consumes, :produces]
   end
 
   defp module_func do

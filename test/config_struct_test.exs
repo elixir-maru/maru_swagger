@@ -6,7 +6,6 @@ defmodule MaruSwagger.ConfigStructTest do
   describe "MaruSwagger - Plug: init options" do
     defmodule BasicTest.Api do
       use Maru.Router
-      #mount ConfigStructTest.BasicTest.Homepage
     end
 
     def init(opts) do
@@ -29,7 +28,8 @@ defmodule MaruSwagger.ConfigStructTest do
         path: ["swagger", "v1"],
         prefix: [],
         pretty: false,
-        version: nil
+        version: nil,
+        swagger_inject: []
       } == init(
         at: "swagger/v1",
         for: BasicTest.Api
@@ -48,7 +48,8 @@ defmodule MaruSwagger.ConfigStructTest do
         path: ["swagger", "v1"],
         prefix: [],
         pretty: false,
-        version: "v1"
+        version: "v1",
+        swagger_inject: []
       } == init(
         at: "swagger/v1",
         version: "v1",
@@ -62,7 +63,8 @@ defmodule MaruSwagger.ConfigStructTest do
         path: ["swagger", "v1"],
         prefix: [],
         pretty: true,
-        version: "v1"
+        version: "v1",
+        swagger_inject: []
       } == init(
         at: "swagger/v1",
         version: "v1",
@@ -77,7 +79,8 @@ defmodule MaruSwagger.ConfigStructTest do
           path: ["swagger", "v1"],
           prefix: ["longish", "prefix"],
           pretty: true,
-          version: "v1"
+          version: "v1",
+          swagger_inject: []
         } == init(
         at: "swagger/v1",
         version: "v1",
@@ -85,6 +88,49 @@ defmodule MaruSwagger.ConfigStructTest do
         prefix: ["longish", "prefix"],
         for: BasicTest.Api
       )
+    end
+
+    describe "swagger_inject" do
+      @only_valid_fields  [
+        host: "myapi.com",
+        basePath: "/",
+        schemes: ["http"],
+        consumes: ["application/json"],
+        produces: ["application/json", "application/vnd.api+json"]
+      ]
+
+      @some_invalid_fields [
+        host: "myapi.com",
+        invalidbasePath: "/",
+        schemes: ["http"],
+        consumes: ["application/json"],
+        produces: ["application/json", "application/vnd.api+json"]
+      ]
+      it "only allowes pre-defined fields" do
+        res = init(
+          at: "swagger/v1",
+          version: "v1",
+          for: BasicTest.Api,
+          swagger_inject: @only_valid_fields
+        )
+        assert res.swagger_inject == @only_valid_fields
+      end
+
+      it "filters non-predefined fields" do
+        res = init(
+          at: "swagger/v1",
+          version: "v1",
+          for: BasicTest.Api,
+          swagger_inject: @some_invalid_fields
+        )
+        refute res.swagger_inject == @some_invalid_fields
+        assert res.swagger_inject == [
+          host: "myapi.com",
+          schemes: ["http"],
+          consumes: ["application/json"],
+          produces: ["application/json", "application/vnd.api+json"]
+        ]
+      end
     end
   end
 end
