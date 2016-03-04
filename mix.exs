@@ -4,7 +4,7 @@ defmodule MaruSwagger.Mixfile do
   def project do
     [ app: :maru_swagger,
       version: "0.7.2",
-      elixir: "~> 1.0",
+      elixir: "~> 1.1",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps,
@@ -19,9 +19,8 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [
-      { :maru, "~> 0.9"},
-      {:ex_spec, "~> 1.0", only: :test},
+    [ { :maru,    "~> 0.9"},
+      { :ex_spec, "~> 1.0", only: :test },
     ]
   end
 
