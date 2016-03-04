@@ -1,41 +1,17 @@
 defmodule MaruSwagger do
   use Maru.Middleware
+  alias MaruSwagger.ConfigStruct
 
   def init(opts) do
-    module_func = fn ->
-      case Maru.Config.servers do
-        [{module, _} | _] -> module
-        _                 -> raise "missing configured module for Maru in config.exs (MaruSwagger depends on it!)"
-      end
-    end
-
-    path    = opts |> Keyword.fetch!(:at) |> Maru.Router.Path.split
-    module  = opts |> Keyword.get_lazy(:for, module_func)
-
-    prefix_func = fn ->
-      if Code.ensure_loaded?(Phoenix) do
-        phoenix_module = Module.concat(Mix.Phoenix.base(), "Router")
-        phoenix_module.__routes__ |> Enum.filter(fn r ->
-          match?(%{kind: :forward, plug: ^module}, r)
-        end)
-        |> case do
-          [%{path: p}] -> p |> String.split("/", trim: true)
-          _            -> []
-        end
-      else [] end
-    end
-    version = opts |> Keyword.get(:version, nil)
-    pretty  = opts |> Keyword.get(:pretty, false)
-    prefix  = opts |> Keyword.get_lazy(:prefix, prefix_func)
-    {path, module, version, pretty, prefix}
+    ConfigStruct.from_opts(opts)
   end
 
-  def call(%Plug.Conn{path_info: path_info}=conn, {path, module, version, pretty, prefix}) do
-    case Maru.Router.Path.lstrip(path_info, path) do
+  def call(%Plug.Conn{path_info: path_info}=conn, config = %ConfigStruct{}) do
+    case Maru.Router.Path.lstrip(path_info, config.path) do
       {:ok, []} ->
         resp =
-          generate(module, version, prefix)
-          |> Poison.encode!(pretty: pretty)
+          generate(config)
+          |> Poison.encode!(pretty: config.pretty)
         conn
         |> Plug.Conn.put_resp_header("access-control-allow-origin", "*")
         |> Plug.Conn.send_resp(200, resp)
@@ -45,12 +21,16 @@ defmodule MaruSwagger do
   end
 
   def generate(module, version, prefix) do
-    module
+    %ConfigStruct{module: module, version: version, prefix: prefix} |> generate
+  end
+
+  def generate(config = %ConfigStruct{}) do
+    config.module
     |> Maru.Builder.Routers.generate
-    |> Dict.fetch!(version)
+    |> Dict.fetch!(config.version)
     |> Enum.sort(&(&1.path > &2.path))
-    |> Enum.map(&extract_endpoint(&1, prefix))
-    |> MaruSwagger.ResponseFormatter.format(module, version)
+    |> Enum.map(&extract_endpoint(&1, config.prefix))
+    |> MaruSwagger.ResponseFormatter.format(config)
   end
 
   defp extract_endpoint(ep, prefix) do

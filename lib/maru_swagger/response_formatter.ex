@@ -1,8 +1,11 @@
 defmodule MaruSwagger.ResponseFormatter do
-  # TODO too cryptic, split up into smaller functions...
-  def format(list, module, version) do
-    #IO.puts "## FORMATTING ### \n #{inspect(list)}"
+  alias MaruSwagger.ConfigStruct
 
+  def format(list, module, version) do
+    list |> format(%ConfigStruct{module: module, version: version})
+  end
+
+  def format(list, config=%ConfigStruct{}) do
     paths = list |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
       url = join_path(url_list)
       if Map.has_key? result, url do
@@ -18,18 +21,19 @@ defmodule MaruSwagger.ResponseFormatter do
         }
       })
     end)
-    wrap_in_swagger_info(module, version, paths)
+    wrap_in_swagger_info(paths, config)
   end
 
-  defp wrap_in_swagger_info(module, version, paths) do
-    %{
+  defp wrap_in_swagger_info(paths, config=%ConfigStruct{}) do
+    res = %{
       swagger: "2.0",
       info: %{
-        version: version,
-        title: "Swagger API for #{elixir_module_name(module)}",
+        version: config.version,
+        title: "Swagger API for #{elixir_module_name(config.module)}",
       },
       paths: paths
     }
+    for {k,v} <- (config.swagger_inject || []), into: res, do: {k,v}
   end
 
   defp elixir_module_name(module) do
