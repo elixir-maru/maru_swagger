@@ -1,5 +1,27 @@
 ## Changelog
-## v0.7.0-dev
+
+## v0.7.3
+* Enhancements
+  * Some code cleanup + some more unit tests
+  * support change parameter name by source option
+
+## v0.7.2 (2016-2-19)
+* Enhancements
+  * unit tests with ExSpec + small matcher macro
+  * wording for error message in case Maru was not configured in config.ex
+  * 2 new modules: ResponseFormatter + ParamsExtractor
+  * travis config
+  * Readme badges
+
+* Bugfix
+  * required params on GET endpoints
+
+## v0.7.1 (2016-2-19)
+* Bugfix
+  * body params missing
+  * ignore Validation in params list
+
+## v0.7.0 (2016-1-29)
 * Enhancements
   * Support multiple version
   * Support maru router forwarded by Phoenix
