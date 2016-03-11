@@ -28,7 +28,6 @@ defmodule MaruSwagger do
     config.module
     |> Maru.Builder.Routers.generate
     |> Dict.fetch!(config.version)
-    |> Enum.sort(&(&1.path > &2.path))
     |> Enum.map(&extract_endpoint(&1, config.prefix))
     |> MaruSwagger.ResponseFormatter.format(config)
   end
