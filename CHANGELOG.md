@@ -1,6 +1,6 @@
 ## Changelog
 
-## v0.7.3
+## v0.7.3 (2016-3-11)
 * Enhancements
   * Some code cleanup + some more unit tests
   * support change parameter name by source option
