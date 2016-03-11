@@ -9,7 +9,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
       use Maru.Router
       desc "res1 create"
       params do
-        requires :name, type: :string
+        requires :name, type: :string, source: "user_name"
         requires :email, type: :string
       end
       def pc, do: @param_context
@@ -24,8 +24,8 @@ defmodule MaruSwagger.ParamsExtractorTest do
         %{description: "desc", in: "body", name: "body", required: false,
           schema: %{
             properties: %{
-              email: %{description: "", required: true, type: "string"},
-              name: %{description: "", required: true, type: "string"}
+              :email => %{description: "", required: true, type: "string"},
+              "user_name" => %{description: "", required: true, type: "string"}
             }
           }
         }

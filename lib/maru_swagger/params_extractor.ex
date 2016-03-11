@@ -43,7 +43,7 @@ defmodule MaruSwagger.ParamsExtractor do
 
   def extract_params(%Endpoint{method: "GET", path: path, param_context: param_context}) do
     for param <- param_context do
-      %{ name:        param.attr_name,
+      %{ name:        param.source || param.attr_name,
          description: param.desc || "",
          required:    param.required,
          type:        decode_parser(param.parser),
@@ -62,8 +62,9 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   defp convert_param_list_to_swagger(param_list_extra) do
-    for %Maru.Router.Param{attr_name: attr_name, parser: parser, required: required, desc: desc} <- param_list_extra do
-      { attr_name, %{
+    for %Maru.Router.Param{attr_name: attr_name, parser: parser, required: required, source: source, desc: desc} <- param_list_extra do
+      { source || attr_name,
+        %{
           type: decode_parser(parser),
           required: required,
           description: desc || "",
@@ -74,7 +75,7 @@ defmodule MaruSwagger.ParamsExtractor do
 
   defp convert_file_param_list_to_swagger(file_list) do
      for param <- file_list do
-      %{ name:        param.attr_name,
+      %{ name:        param.source || param.attr_name,
          in:          "formData",
          description: "file",
          required:    true,
