@@ -1,5 +1,7 @@
 ## Changelog
 
+## v0.8.0-dev
+
 ## v0.7.3 (2016-3-11)
 * Enhancements
   * Some code cleanup + some more unit tests
