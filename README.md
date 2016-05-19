@@ -24,26 +24,25 @@ end
 
 defmodule API do
   use Maru.Router
+  use MaruSwagger
 
   plug Plug.Logger
-  if Mix.env == :dev do
-    plug MaruSwagger,
-      at:      "/swagger/v1.json", # (required) the mount point for the URL
-      for:     Router,             # (required) if missing is taken from config.exs
-      version: "v1",               # (optional) what version should be considered during Swagger JSON generation?
-      prefix:  ["v1"],             # (optional) in case you need a prefix for the URLs in Swagger JSON
-      pretty:  true,               # (optional) should JSON be pretty-printed?
-      swagger_inject: [            # (optional) this will be directly injected into the root Swagger JSON
-        host: "myapi.com",
-        basePath: "/",
-        schemes:  [ "http" ],
-        consumes: [ "application/json" ],
-        produces: [
-          "application/json",
-          "application/vnd.api+json"
-        ]
-      ]
-  end
+
+  swagger at:      "/swagger/v1.json", # (required) the mount point for the URL
+          pretty:  true,               # (optional) should JSON be pretty-printed?
+          only:    [:dev],             # (optional) the environments swagger works
+          except:  [:prod],            # (optional) the environments swagger NOT works
+
+          swagger_inject: [            # (optional) this will be directly injected into the root Swagger JSON
+            host: "myapi.com",
+            basePath: "/api",
+            schemes:  [ "http" ],
+            consumes: [ "application/json" ],
+            produces: [
+              "application/json",
+              "application/vnd.api+json"
+            ]
+          ]
 
   mount Router
 end

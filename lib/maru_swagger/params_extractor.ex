@@ -1,6 +1,7 @@
 defmodule MaruSwagger.ParamsExtractor do
   defmodule NonGetParamsGenerator do
     def generate(file_param_list, param_list, path) do
+
       default_body
       |> adjust_param_list(param_list)
       |> adjust_file_param_list(file_param_list)
@@ -36,36 +37,36 @@ defmodule MaruSwagger.ParamsExtractor do
     end
   end
 
-  alias Maru.Router.Endpoint
-  def extract_params(%Endpoint{method: {:_, [], nil}}=ep) do
+  alias Maru.Struct.Route
+  def extract_params(%Route{method: {:_, [], nil}}=ep) do
     %{ep | method: "MATCH"} |> extract_params
   end
 
-  def extract_params(%Endpoint{method: "GET", path: path, param_context: param_context}) do
-    for param <- param_context do
+  def extract_params(%Route{method: "GET", path: path, parameters: parameters}) do
+    for param <- parameters do
       %{ name:        param.source || param.attr_name,
          description: param.desc || "",
          required:    param.required,
-         type:        decode_parser(param.parser),
+         type:        decode_type(param.type),
          in:          param.attr_name in path && "path" || "query",
       }
     end
   end
-  def extract_params(%Endpoint{method: "GET"}), do: []
-  def extract_params(%Endpoint{param_context: []}), do: []
+  def extract_params(%Route{method: "GET"}), do: []
+  def extract_params(%Route{parameters: []}), do: []
 
-  def extract_params(%Endpoint{param_context: param_context, path: path}) do
-    {file_param_list, param_list} = split_file_list_and_rest(param_context)
+  def extract_params(%Route{parameters: parameters, path: path}) do
+    {file_param_list, param_list} = split_file_list_and_rest(parameters)
     file_param_list_swagger       = convert_file_param_list_to_swagger(file_param_list)
     param_list_swagger            = convert_param_list_to_swagger(param_list)
     NonGetParamsGenerator.generate(file_param_list_swagger, param_list_swagger, path)
   end
 
   defp convert_param_list_to_swagger(param_list_extra) do
-    for %Maru.Router.Param{attr_name: attr_name, parser: parser, required: required, source: source, desc: desc} <- param_list_extra do
+    for %Maru.Struct.Parameter{attr_name: attr_name, type: type, required: required, source: source, desc: desc} <- param_list_extra do
       { source || attr_name,
         %{
-          type: decode_parser(parser),
+          type: decode_type(type),
           required: required,
           description: desc || "",
         }
@@ -84,11 +85,11 @@ defmodule MaruSwagger.ParamsExtractor do
     end
   end
 
-  defp decode_parser(parser) do
-    parser |> to_string |> String.split(".") |> List.last |> String.downcase
+  defp decode_type(type) do
+    type |> to_string |> String.split(".") |> List.last |> String.downcase
   end
 
   defp split_file_list_and_rest(params_list) do
-     Enum.split_while(params_list, fn(param) -> decode_parser(param.parser) == "file" end)
+     Enum.split_while(params_list, fn(param) -> decode_type(param.type) == "file" end)
   end
 end

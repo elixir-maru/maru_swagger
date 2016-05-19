@@ -1,6 +1,7 @@
 defmodule MaruSwagger.ResponseFormatterTest do
   use ExSpec, async: true
   doctest MaruSwagger.ResponseFormatter
+  alias MaruSwagger.ConfigStruct
   import Plug.Test
 
   describe "basic test" do
@@ -32,42 +33,42 @@ defmodule MaruSwagger.ResponseFormatterTest do
       end
     end
 
-    defmodule BasicTest.Api do
+    defmodule BasicTest.API do
       use Maru.Router
-      version "v1"
+      @make_plug true
+      @test      false
+      use MaruSwagger
+
+      swagger at:     "/swagger/v1.json", # (required) the mount point for the URL
+              pretty: true,               # (optional) should JSON be pretty-printed?
+              swagger_inject: [           # (optional) this will be directly injected into the root Swagger JSON
+                host:     "myapi.com",
+                basePath: "/api",
+                schemes:  [ "http" ],
+                consumes: [ "application/json" ],
+                produces: [
+                  "application/json",
+                  "application/vnd.api+json"
+                ]
+              ]
+
       mount MaruSwagger.ResponseFormatterTest.BasicTest.Homepage
     end
 
-    defmodule BasicTest.Swagger do
-      use Maru.Router
-      plug MaruSwagger,
-        at:      "/swagger/v1.json", # (required) the mount point for the URL
-        for:     BasicTest.Api,      # (required) if missing is taken from config.exs
-        version: "v1",               # (optional) what version should be considered during Swagger JSON generation?
-        prefix:  ["v1"],             # (optional) in case you need a prefix for the URLs in Swagger JSON
-        pretty:  true,               # (optional) should JSON be pretty-printed?
-        swagger_inject: [            # (optional) this will be directly injected into the root Swagger JSON
-          host: "myapi.com",
-          basePath: "/",
-          schemes:  [ "http" ],
-          consumes: [ "application/json" ],
-          produces: [
-            "application/json",
-            "application/vnd.api+json"
-          ]
-        ]
-    end
-
     it "includes basic information for swagger (title, API version, Swagger version)" do
-      swagger_docs = MaruSwagger.generate(MaruSwagger.ResponseFormatterTest.BasicTest.Api, "v1", ["/"])
-      assert swagger_docs |> get_in([:info, :title]) =~ "MaruSwagger.ResponseFormatterTest.BasicTest.Api"
-      assert swagger_docs |> get_in([:info, :version]) == "v1"
+      swagger_docs =
+        %ConfigStruct{
+          module: MaruSwagger.ResponseFormatterTest.BasicTest.Homepage,
+        } |> MaruSwagger.Plug.generate
+
+
+      assert swagger_docs |> get_in([:info, :title]) =~ "MaruSwagger.ResponseFormatterTest.BasicTest.Homepage"
       assert swagger_docs |> get_in([:swagger]) == "2.0"
     end
 
     it "works in full integration" do
-      json = get_response(BasicTest.Swagger, conn(:get, "/swagger/v1.json"))
-      assert json.basePath == "/"
+      json = get_response(BasicTest.API, conn(:get, "/swagger/v1.json"))
+      assert json.basePath == "/api"
       assert json.host == "myapi.com"
     end
   end

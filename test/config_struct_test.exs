@@ -9,91 +9,54 @@ defmodule MaruSwagger.ConfigStructTest do
     end
 
     def init(opts) do
-      opts |> ConfigStruct.from_opts
+      [{:module, nil} | opts] |> ConfigStruct.from_opts
     end
 
     def api_module do
       MaruSwagger.ConfigStructTest.BasicTest.Api
     end
 
-    it "param :for -> raises if not provided and not configured in config.exs" do
-      assert_raise RuntimeError, "missing configured module for Maru in config.exs (MaruSwagger depends on it!)", fn ->
-        init(at: "/swagger/v1")
-      end
-    end
-
     it "requires :at for mounting point" do
       assert %MaruSwagger.ConfigStruct{
-        module: api_module,
         path: ["swagger", "v1"],
-        prefix: [],
         pretty: false,
-        version: nil,
         swagger_inject: []
       } == init(
         at: "swagger/v1",
-        for: BasicTest.Api
       )
     end
 
     it "raises without :at" do
-      assert_raise KeyError, "key :at not found in: [for: MaruSwagger.ConfigStructTest.BasicTest.Api]", fn ->
+      assert_raise KeyError, "key :at not found in: [module: nil, for: MaruSwagger.ConfigStructTest.BasicTest.Api]", fn ->
         init(for: BasicTest.Api)
       end
     end
 
-    it "accepts :version for specified version" do
-      assert %MaruSwagger.ConfigStruct{
-        module: api_module,
-        path: ["swagger", "v1"],
-        prefix: [],
-        pretty: false,
-        version: "v1",
-        swagger_inject: []
-      } == init(
-        at: "swagger/v1",
-        version: "v1",
-        for: BasicTest.Api
-      )
-    end
-
     it "accepts :pretty for JSON output" do
       assert %MaruSwagger.ConfigStruct{
-        module: api_module,
         path: ["swagger", "v1"],
-        prefix: [],
         pretty: true,
-        version: "v1",
         swagger_inject: []
       } == init(
         at: "swagger/v1",
-        version: "v1",
         pretty: true,
-        for: BasicTest.Api
       )
     end
 
     it "accepts :prefix to prepend to URLs" do
       assert %MaruSwagger.ConfigStruct{
-          module: api_module,
-          path: ["swagger", "v1"],
-          prefix: ["longish", "prefix"],
-          pretty: true,
-          version: "v1",
-          swagger_inject: []
-        } == init(
-        at: "swagger/v1",
-        version: "v1",
+        path: ["swagger", "v1"],
         pretty: true,
-        prefix: ["longish", "prefix"],
-        for: BasicTest.Api
+        swagger_inject: []
+      } == init(
+        at: "swagger/v1",
+        pretty: true,
       )
     end
 
     describe "swagger_inject" do
       @only_valid_fields  [
         host: "myapi.com",
-        basePath: "/",
         schemes: ["http"],
         consumes: ["application/json"],
         produces: ["application/json", "application/vnd.api+json"]
@@ -109,8 +72,6 @@ defmodule MaruSwagger.ConfigStructTest do
       it "only allowes pre-defined fields" do
         res = init(
           at: "swagger/v1",
-          version: "v1",
-          for: BasicTest.Api,
           swagger_inject: @only_valid_fields
         )
         assert res.swagger_inject == @only_valid_fields
@@ -119,8 +80,6 @@ defmodule MaruSwagger.ConfigStructTest do
       it "filters non-predefined fields" do
         res = init(
           at: "swagger/v1",
-          version: "v1",
-          for: BasicTest.Api,
           swagger_inject: @some_invalid_fields
         )
         refute res.swagger_inject == @some_invalid_fields

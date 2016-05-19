@@ -1,6 +1,8 @@
 ## Changelog
 
 ## v0.8.0-dev
+* Enhancements
+  * update to maru-0.10.0-dev
 
 ## v0.7.3 (2016-3-11)
 * Enhancements

@@ -2,6 +2,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
   use ExSpec, async: true
   doctest MaruSwagger.ParamsExtractor
   import TestHelper
+  alias Maru.Coercions, as: C
 
 
   describe "POST" do
@@ -12,14 +13,14 @@ defmodule MaruSwagger.ParamsExtractorTest do
         requires :name, type: :string, source: "user_name"
         requires :email, type: :string
       end
-      def pc, do: @param_context
+      def pc, do: @parameters
       post "/res1" do
         conn |> json(params)
       end
     end
 
     it "works with basic POST params" do
-      endpoint_info = endpoint_from_module(BasicPostApi, "POST", ["res1"])
+      route_info = route_from_module(BasicPostApi, "POST", ["res1"])
       expected = [
         %{description: "desc", in: "body", name: "body", required: false,
           schema: %{
@@ -30,7 +31,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
           }
         }
       ]
-      assert extract_params(endpoint_info) == expected
+      assert extract_params(route_info) == expected
     end
   end
 
@@ -53,7 +54,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
         requires :email, type: :string
         optional :age, type: :integer, desc: "age information"
       end
-      def pc, do: @param_context
+      def pc, do: @parameters
       post "/complex" do
         conn |> json(params)
       end
@@ -61,19 +62,19 @@ defmodule MaruSwagger.ParamsExtractorTest do
 
     defmodule BasicTest.Api do
       use Maru.Router
-      mount MaruSwagger.ParamsExtractorTest.Homepage
+      mount MaruSwagger.ParamsExtractorTest.BasicTest.Homepage
     end
 
     it "has expected params_context" do
-      assert BasicTest.Homepage.pc == [
-        %Maru.Router.Param{attr_name: :name, children: [], coerce_with: nil, default: nil, desc: nil, parser: :string, required: true, source: nil, validators: []},
-        %Maru.Router.Param{attr_name: :email, children: [], coerce_with: nil, default: nil, desc: nil, parser: :string, required: true, source: nil, validators: []},
-        %Maru.Router.Param{attr_name: :age, children: [], coerce_with: nil, default: nil, desc: "age information", parser: :integer, required: false, source: nil, validators: []}
-      ]
+      assert  [
+        %Maru.Struct.Parameter{attr_name: :name, coercer: {:module, C.String}, type: C.String, required: true},
+        %Maru.Struct.Parameter{attr_name: :email, coercer: {:module, C.String}, type: C.String, required: true},
+        %Maru.Struct.Parameter{attr_name: :age, coercer: {:module, C.Integer}, desc: "age information", type: C.Integer, required: false}
+      ] = BasicTest.Homepage.pc
     end
 
     it "extracts expected swagger data from given params_context" do
-      endpoint_info = endpoint_from_module(BasicTest.Homepage, "POST", ["complex"])
+      route_info = route_from_module(BasicTest.Homepage, "POST", ["complex"])
       expected = [
         %{description: "desc", in: "body", name: "body", required: false,
               schema: %{properties: %{
@@ -81,7 +82,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
                 email: %{description: "", required: true, type: "string"},
                 name:  %{description: "", required: true, type: "string"}}}}
       ]
-      assert extract_params(endpoint_info) == expected
+      assert extract_params(route_info) == expected
     end
   end
 end

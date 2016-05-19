@@ -1,12 +1,8 @@
 defmodule MaruSwagger.ResponseFormatter do
   alias MaruSwagger.ConfigStruct
 
-  def format(list, module, version) do
-    list |> format(%ConfigStruct{module: module, version: version})
-  end
-
-  def format(list, config=%ConfigStruct{}) do
-    paths = list |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params}, result) ->
+  def format(routes, tags, config=%ConfigStruct{}) do
+    paths = routes |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params, tag: tag}, result) ->
       url = join_path(url_list)
       if Map.has_key? result, url do
         result
@@ -14,6 +10,7 @@ defmodule MaruSwagger.ResponseFormatter do
         result |> put_in([url], %{})
       end
       |> put_in([url, String.downcase(method)], %{
+        tags: [tag],
         description: desc || "",
         parameters: params,
         responses: %{
@@ -21,17 +18,17 @@ defmodule MaruSwagger.ResponseFormatter do
         }
       })
     end)
-    wrap_in_swagger_info(paths, config)
+    wrap_in_swagger_info(paths, tags, config)
   end
 
-  defp wrap_in_swagger_info(paths, config=%ConfigStruct{}) do
+  defp wrap_in_swagger_info(paths, tags, config=%ConfigStruct{}) do
     res = %{
       swagger: "2.0",
       info: %{
-        version: config.version,
         title: "Swagger API for #{elixir_module_name(config.module)}",
       },
-      paths: paths
+      paths: paths,
+      tags: tags,
     }
     for {k,v} <- (config.swagger_inject || []), into: res, do: {k,v}
   end
@@ -50,4 +47,5 @@ defmodule MaruSwagger.ResponseFormatter do
       end
     end ] |> Path.join
   end
+
 end
