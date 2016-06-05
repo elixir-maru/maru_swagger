@@ -24,7 +24,12 @@ defmodule MaruSwagger.Plug do
   def generate(%ConfigStruct{}=config) do
     c = (Application.get_env(:maru, config.module) || [])[:versioning] || []
     adapter = Maru.Builder.Versioning.get_adapter(c[:using])
-    routes = config.module.__routes__
+    routes =
+      config.module.__routes__
+      |> Enum.map(fn route ->
+        parameters = Enum.map(route.parameters, &(&1.information))
+        %{ route | parameters: parameters }
+      end)
     tags =
       routes
       |> Enum.map(&(&1.version))

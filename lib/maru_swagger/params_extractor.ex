@@ -1,4 +1,6 @@
 defmodule MaruSwagger.ParamsExtractor do
+  alias Maru.Struct.Parameter.Information
+
   defmodule NonGetParamsGenerator do
     def generate(file_param_list, param_list, path) do
 
@@ -44,7 +46,7 @@ defmodule MaruSwagger.ParamsExtractor do
 
   def extract_params(%Route{method: "GET", path: path, parameters: parameters}) do
     for param <- parameters do
-      %{ name:        param.source || param.attr_name,
+      %{ name:        param.param_key,
          description: param.desc || "",
          required:    param.required,
          type:        decode_type(param.type),
@@ -63,8 +65,8 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   defp convert_param_list_to_swagger(param_list_extra) do
-    for %Maru.Struct.Parameter{attr_name: attr_name, type: type, required: required, source: source, desc: desc} <- param_list_extra do
-      { source || attr_name,
+    for %Information{param_key: param_key, type: type, required: required, desc: desc} <- param_list_extra do
+      { param_key,
         %{
           type: decode_type(type),
           required: required,
@@ -86,7 +88,7 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   defp decode_type(type) do
-    type |> to_string |> String.split(".") |> List.last |> String.downcase
+    type |> String.downcase
   end
 
   defp split_file_list_and_rest(params_list) do

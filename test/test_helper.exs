@@ -18,11 +18,14 @@ defmodule TestHelper do
       # post "/complex", "v1" ->
       # TestHelper.route_from_module(BasicTest.Homepage, "v1", "POST", ["complex"])
   """
-  def route_from_module(module, method, path_list) do
-    module.__routes__
-      # |> Maru.Builder.Routers.generate
-      # |> Map.get(version) # ?? this is the missing version I guess...
-      |> Enum.find(fn(x)-> x.path == path_list && x.method == String.upcase(method) end)
+  def route_from_module(module, version \\ nil, method, path_list) do
+    route = Enum.find(module.__routes__, fn x ->
+      x.path == path_list &&
+        x.method == String.upcase(method) &&
+        x.version == version
+    end)
+    parameters = Enum.map(route.parameters, &(&1.information))
+    %{ route | parameters: parameters }
   end
 
   @doc """

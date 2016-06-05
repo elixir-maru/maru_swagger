@@ -32,7 +32,7 @@ defmodule MaruSwagger.PlugTest do
         %{ "get" => %{
              description: "hello world action",
              parameters: [
-               %{description: "", in: "query", name: :id, required: true, type: "integer"}
+               %{description: "", in: "query", name: "id", required: true, type: "integer"}
              ],
              responses: %{"200" => %{description: "ok"}},
              tags: ["DEFAULT"],

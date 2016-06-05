@@ -44,7 +44,7 @@ defmodule MaruVersioningTest do
           "get" => %{
             description: "basic get",
             parameters: [
-              %{description: "", in: "query", name: :id, required: true, type: "integer"}
+              %{description: "", in: "query", name: "id", required: true, type: "integer"}
             ],
             responses: %{"200" => %{description: "ok"}},
             tags: ["Version: v1"],

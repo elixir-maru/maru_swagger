@@ -2,7 +2,6 @@ defmodule MaruSwagger.ParamsExtractorTest do
   use ExSpec, async: true
   doctest MaruSwagger.ParamsExtractor
   import TestHelper
-  alias Maru.Coercions, as: C
 
 
   describe "POST" do
@@ -13,7 +12,6 @@ defmodule MaruSwagger.ParamsExtractorTest do
         requires :name, type: :string, source: "user_name"
         requires :email, type: :string
       end
-      def pc, do: @parameters
       post "/res1" do
         conn |> json(params)
       end
@@ -21,17 +19,16 @@ defmodule MaruSwagger.ParamsExtractorTest do
 
     it "works with basic POST params" do
       route_info = route_from_module(BasicPostApi, "POST", ["res1"])
-      expected = [
+      assert [
         %{description: "desc", in: "body", name: "body", required: false,
           schema: %{
             properties: %{
-              :email => %{description: "", required: true, type: "string"},
+              "email" => %{description: "", required: true, type: "string"},
               "user_name" => %{description: "", required: true, type: "string"}
             }
           }
         }
-      ]
-      assert extract_params(route_info) == expected
+      ] == extract_params(route_info)
     end
   end
 
@@ -54,7 +51,6 @@ defmodule MaruSwagger.ParamsExtractorTest do
         requires :email, type: :string
         optional :age, type: :integer, desc: "age information"
       end
-      def pc, do: @parameters
       post "/complex" do
         conn |> json(params)
       end
@@ -65,24 +61,16 @@ defmodule MaruSwagger.ParamsExtractorTest do
       mount MaruSwagger.ParamsExtractorTest.BasicTest.Homepage
     end
 
-    it "has expected params_context" do
-      assert  [
-        %Maru.Struct.Parameter{attr_name: :name, coercer: {:module, C.String}, type: C.String, required: true},
-        %Maru.Struct.Parameter{attr_name: :email, coercer: {:module, C.String}, type: C.String, required: true},
-        %Maru.Struct.Parameter{attr_name: :age, coercer: {:module, C.Integer}, desc: "age information", type: C.Integer, required: false}
-      ] = BasicTest.Homepage.pc
-    end
-
     it "extracts expected swagger data from given params_context" do
       route_info = route_from_module(BasicTest.Homepage, "POST", ["complex"])
-      expected = [
+      assert [
         %{description: "desc", in: "body", name: "body", required: false,
               schema: %{properties: %{
-                age:   %{description: "age information", required: false, type: "integer"},
-                email: %{description: "", required: true, type: "string"},
-                name:  %{description: "", required: true, type: "string"}}}}
-      ]
-      assert extract_params(route_info) == expected
+                "age"   =>   %{description: "age information", required: false, type: "integer"},
+                "email" => %{description: "", required: true, type: "string"},
+                "name"  => %{description: "", required: true, type: "string"}}}}
+      ] = extract_params(route_info)
     end
   end
+
 end

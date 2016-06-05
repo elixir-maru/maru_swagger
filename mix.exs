@@ -19,7 +19,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,    "~> 0.10-dev"},
+    [ { :maru,    github: "falood/maru" },
       { :ex_spec, "~> 1.0", only: :test },
     ]
   end
