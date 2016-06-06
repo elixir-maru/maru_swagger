@@ -8,13 +8,11 @@ MaruSwagger
 
 ## Usage
 
-NOTE: `maru_swagger` is only works for `:dev`
-
-GOTCHA: Please keep `MaruSwagger` plug out of `version` DSL!
+GOTCHA: Please keep `swagger` DSL out of `version`!
 
 ```elixir
 def deps do
-  [ {:maru_swagger, "~> 0.7", only: :dev} ]
+  [ {:maru_swagger, github: "falood/maru_swagger"} ]
 end
 
 defmodule Router do
@@ -28,7 +26,7 @@ defmodule API do
 
   plug Plug.Logger
 
-  swagger at:      "/swagger/v1.json", # (required) the mount point for the URL
+  swagger at:      "/swagger",         # (required) the mount point for the URL
           pretty:  true,               # (optional) should JSON be pretty-printed?
           only:    [:dev],             # (optional) the environments swagger works
           except:  [:prod],            # (optional) the environments swagger NOT works
@@ -48,9 +46,9 @@ defmodule API do
 end
 ```
 
-and then you can get json response from `curl http://127.0.0.1:4000/swagger/v1`.
+and then you can get json response from `curl http://127.0.0.1:4000/swagger`.
 
-open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in `http://127.0.0.1:4000/swagger/v1` and enjoy maru_swagger.
+open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in `http://127.0.0.1:4000/swagger` and enjoy maru_swagger.
 
 
 ## Thanks
