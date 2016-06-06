@@ -1,10 +1,9 @@
 MaruSwagger
 ===========
 
-[![Build status](https://travis-ci.org/falood/maru_swagger.svg "Build status")](https://travis-ci.org/falood/maru_swagger)
-[![hex.pm Version](https://img.shields.io/hexpm/v/maru_swagger.svg)](https://hex.pm/packages/maru_swagger)
-![Hex downloads](https://img.shields.io/hexpm/dt/maru_swagger.svg "Hex downloads")
-
+[![Build status](https://img.shields.io/travis/falood/maru_swagger.svg?style=flat-square)](https://travis-ci.org/falood/maru_swagger)
+[![hex.pm Version](https://img.shields.io/hexpm/v/maru_swagger.svg?style=flat-square)](https://hex.pm/packages/maru_swagger)
+[![Hex downloads](https://img.shields.io/hexpm/dt/maru_swagger.svg?style=flat-square)](https://hex.pm/packages/maru_swagger)
 
 ## Usage
 
