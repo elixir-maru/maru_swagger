@@ -20,14 +20,8 @@ defmodule MaruSwagger.ParamsExtractorTest do
     it "works with basic POST params" do
       route_info = route_from_module(BasicPostApi, "POST", ["res1"])
       assert [
-        %{description: "desc", in: "body", name: "body", required: false,
-          schema: %{
-            properties: %{
-              "email" => %{description: "", required: true, type: "string"},
-              "user_name" => %{description: "", required: true, type: "string"}
-            }
-          }
-        }
+        %{description: "", in: "formData", name: "user_name", required: true, type: "string"},
+        %{description: "", in: "formData", name: "email", required: true, type: "string"},
       ] == extract_params(route_info)
     end
   end
@@ -47,7 +41,10 @@ defmodule MaruSwagger.ParamsExtractorTest do
 
       desc "complex post"
       params do
-        requires :name, type: :string
+        requires :name, type: :map do
+          requires :first, type: :string
+          requires :last, type: :string
+        end
         requires :email, type: :string
         optional :age, type: :integer, desc: "age information"
       end
@@ -64,11 +61,11 @@ defmodule MaruSwagger.ParamsExtractorTest do
     it "extracts expected swagger data from given params_context" do
       route_info = route_from_module(BasicTest.Homepage, "POST", ["complex"])
       assert [
-        %{description: "desc", in: "body", name: "body", required: false,
-              schema: %{properties: %{
-                "age"   =>   %{description: "age information", required: false, type: "integer"},
-                "email" => %{description: "", required: true, type: "string"},
-                "name"  => %{description: "", required: true, type: "string"}}}}
+        %{ description: "", in: "body", name: "body", required: false,
+           schema: %{properties: %{
+             "age" => %{description: "age information", required: false, type: "integer"},
+             "email" => %{description: "", required: true, type: "string"},
+             "name"  => %{description: "", required: true, type: "map"}}}}
       ] = extract_params(route_info)
     end
   end
