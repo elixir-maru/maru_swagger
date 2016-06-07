@@ -30,14 +30,7 @@ defmodule MaruSwagger.ParamsExtractor do
 
     defp format_body_params(param_list) do
       param_list
-      |> Enum.map(fn param ->
-        { param.param_key,
-          %{ description: param.desc || "",
-             type:        param.type,
-             required:    param.required,
-           }
-        }
-      end)
+      |> Enum.map(&format_param/1)
       |> case do
         []     -> default_body
         params ->
@@ -46,6 +39,34 @@ defmodule MaruSwagger.ParamsExtractor do
           |> put_in([:schema], %{})
           |> put_in([:schema, :properties], params)
       end
+    end
+
+    defp format_param(%Information{children: []}=param) do
+      { param.param_key,
+        %{ description: param.desc || "",
+           type:        param.type,
+           required:    param.required,
+         }
+      }
+    end
+
+    defp format_param(%Information{type: "map"}=param) do
+      { param.param_key,
+        %{ type: "object",
+           properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{}),
+         }
+      }
+    end
+
+    defp format_param(%Information{type: "list"}=param) do
+      { param.param_key,
+        %{ type: "array",
+           items: %{
+             type: "object",
+             properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{}),
+           }
+         }
+      }
     end
   end
 
@@ -84,9 +105,6 @@ defmodule MaruSwagger.ParamsExtractor do
 
   def extract_params(%Route{parameters: param_list, path: path}) do
     param_list = filter_information(param_list)
-    # {file_param_list, param_list} = split_file_list_and_rest(parameters)
-    # file_param_list_swagger       = convert_file_param_list_to_swagger(file_param_list)
-    # param_list_swagger            = convert_param_list_to_swagger(param_list)
     (case judge_adapter(param_list) do
       :body      -> NonGetBodyParamsGenerator
       :form_data -> NonGetFormDataParamsGenerator
