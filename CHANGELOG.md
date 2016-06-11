@@ -1,8 +1,10 @@
 ## Changelog
 
-## v0.8.0-dev
+## v0.8.0 (2016-6-11)
 * Enhancements
-  * update to maru-0.10.0-dev
+  * update to maru-0.10.0
+  * support nested struct for body params
+  * use formData by default for no nested struct
 
 ## v0.7.3 (2016-3-11)
 * Enhancements
