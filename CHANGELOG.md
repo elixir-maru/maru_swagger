@@ -1,6 +1,8 @@
 ## Changelog
 
 ## v0.8.1-dev
+* Enhancements
+  * use buildin UnitTest
 
 ## v0.8.0 (2016-6-11)
 * Enhancements

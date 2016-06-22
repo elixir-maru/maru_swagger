@@ -1,5 +1,5 @@
 defmodule MaruSwagger.ConfigStructTest do
-  use ExSpec, async: true
+  use ExUnit.Case, async: true
   doctest MaruSwagger.ConfigStruct
   alias MaruSwagger.ConfigStruct
 
@@ -16,7 +16,7 @@ defmodule MaruSwagger.ConfigStructTest do
       MaruSwagger.ConfigStructTest.BasicTest.Api
     end
 
-    it "requires :at for mounting point" do
+    test "requires :at for mounting point" do
       assert %MaruSwagger.ConfigStruct{
         path: ["swagger", "v1"],
         pretty: false,
@@ -26,13 +26,13 @@ defmodule MaruSwagger.ConfigStructTest do
       )
     end
 
-    it "raises without :at" do
+    test "raises without :at" do
       assert_raise KeyError, "key :at not found in: [module: nil, for: MaruSwagger.ConfigStructTest.BasicTest.Api]", fn ->
         init(for: BasicTest.Api)
       end
     end
 
-    it "accepts :pretty for JSON output" do
+    test "accepts :pretty for JSON output" do
       assert %MaruSwagger.ConfigStruct{
         path: ["swagger", "v1"],
         pretty: true,
@@ -43,7 +43,7 @@ defmodule MaruSwagger.ConfigStructTest do
       )
     end
 
-    it "accepts :prefix to prepend to URLs" do
+    test "accepts :prefix to prepend to URLs" do
       assert %MaruSwagger.ConfigStruct{
         path: ["swagger", "v1"],
         pretty: true,
@@ -52,44 +52,45 @@ defmodule MaruSwagger.ConfigStructTest do
         at: "swagger/v1",
         pretty: true,
       )
-    end
-
-    describe "swagger_inject" do
-      @only_valid_fields  [
-        host: "myapi.com",
-        schemes: ["http"],
-        consumes: ["application/json"],
-        produces: ["application/json", "application/vnd.api+json"]
-      ]
-
-      @some_invalid_fields [
-        host: "myapi.com",
-        invalidbasePath: "/",
-        schemes: ["http"],
-        consumes: ["application/json"],
-        produces: ["application/json", "application/vnd.api+json"]
-      ]
-      it "only allowes pre-defined fields" do
-        res = init(
-          at: "swagger/v1",
-          swagger_inject: @only_valid_fields
-        )
-        assert res.swagger_inject == @only_valid_fields
-      end
-
-      it "filters non-predefined fields" do
-        res = init(
-          at: "swagger/v1",
-          swagger_inject: @some_invalid_fields
-        )
-        refute res.swagger_inject == @some_invalid_fields
-        assert res.swagger_inject == [
-          host: "myapi.com",
-          schemes: ["http"],
-          consumes: ["application/json"],
-          produces: ["application/json", "application/vnd.api+json"]
-        ]
-      end
     end
   end
+
+  describe "swagger_inject" do
+    @only_valid_fields  [
+      host: "myapi.com",
+      schemes: ["http"],
+      consumes: ["application/json"],
+      produces: ["application/json", "application/vnd.api+json"]
+    ]
+
+    @some_invalid_fields [
+      host: "myapi.com",
+      invalidbasePath: "/",
+      schemes: ["http"],
+      consumes: ["application/json"],
+      produces: ["application/json", "application/vnd.api+json"]
+    ]
+    test "only allowes pre-defined fields" do
+      res = init(
+        at: "swagger/v1",
+        swagger_inject: @only_valid_fields
+      )
+      assert res.swagger_inject == @only_valid_fields
+    end
+
+    test "filters non-predefined fields" do
+      res = init(
+        at: "swagger/v1",
+        swagger_inject: @some_invalid_fields
+      )
+      refute res.swagger_inject == @some_invalid_fields
+      assert res.swagger_inject == [
+        host: "myapi.com",
+        schemes: ["http"],
+        consumes: ["application/json"],
+        produces: ["application/json", "application/vnd.api+json"]
+      ]
+    end
+  end
+
 end

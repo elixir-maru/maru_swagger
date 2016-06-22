@@ -1,5 +1,5 @@
 defmodule MaruSwagger.ParamsExtractorTest do
-  use ExSpec, async: true
+  use ExUnit.Case, async: true
   doctest MaruSwagger.ParamsExtractor
   import TestHelper
 
@@ -17,7 +17,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
       end
     end
 
-    it "works with basic POST params" do
+    test "works with basic POST params" do
       route_info = route_from_module(BasicPostApi, "POST", ["res1"])
       assert [
         %{description: "", in: "formData", name: "user_name", required: true, type: "string"},
@@ -60,7 +60,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
       mount MaruSwagger.ParamsExtractorTest.BasicTest.Homepage
     end
 
-    it "extracts expected swagger data from nested list params" do
+    test "extracts expected swagger data from nested list params" do
       route_info = route_from_module(BasicTest.Homepage, "POST", ["list"])
       assert [
         %{ description: "", in: "body", name: "body", required: false, schema: %{
@@ -72,7 +72,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
       ] = extract_params(route_info)
     end
 
-    it "extracts expected swagger data from nested map params" do
+    test "extracts expected swagger data from nested map params" do
       route_info = route_from_module(BasicTest.Homepage, "POST", ["map"])
       assert [
         %{ description: "", in: "body", name: "body", required: false, schema: %{

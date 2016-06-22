@@ -1,5 +1,5 @@
 defmodule MaruSwagger.ResponseFormatterTest do
-  use ExSpec, async: true
+  use ExUnit.Case, async: true
   doctest MaruSwagger.ResponseFormatter
   alias MaruSwagger.ConfigStruct
   import Plug.Test
@@ -55,7 +55,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
       mount MaruSwagger.ResponseFormatterTest.BasicTest.Homepage
     end
 
-    it "includes basic information for swagger (title, API version, Swagger version)" do
+    test "includes basic information for swagger (title, API version, Swagger version)" do
       swagger_docs =
         %ConfigStruct{
           module: MaruSwagger.ResponseFormatterTest.BasicTest.Homepage,
@@ -66,7 +66,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
       assert swagger_docs |> get_in([:swagger]) == "2.0"
     end
 
-    it "works in full integration" do
+    test "works in full integration" do
       json = get_response(BasicTest.API, conn(:get, "/swagger/v1.json"))
       assert json.basePath == "/api"
       assert json.host == "myapi.com"

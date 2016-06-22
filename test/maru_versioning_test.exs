@@ -1,5 +1,5 @@
 defmodule MaruVersioningTest do
-  use ExSpec, async: true
+  use ExUnit.Case, async: true
   doctest MaruSwagger
   alias MaruSwagger.ConfigStruct
 
@@ -26,7 +26,7 @@ defmodule MaruVersioningTest do
       end
     end
 
-    it "includes the API version" do
+    test "includes the API version" do
       swagger_docs =
         %ConfigStruct{
           module: MaruVersioningTest.BasicTest.Api,
@@ -34,7 +34,7 @@ defmodule MaruVersioningTest do
       assert swagger_docs.tags == [%{name: "Version: v1"}]
     end
 
-    it "includes the paths information" do
+    test "includes the paths information" do
       swagger_docs =
         %ConfigStruct{
           module: MaruVersioningTest.BasicTest.Api,
@@ -87,7 +87,7 @@ defmodule MaruVersioningTest do
       mount MaruVersioningTest.DiffVersions.Homepage
     end
 
-    it "returns only docs for specified version" do
+    test "returns only docs for specified version" do
       swagger_docs =
         %ConfigStruct{
           module: MaruVersioningTest.DiffVersions.Api,

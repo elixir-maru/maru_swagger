@@ -1,5 +1,5 @@
 defmodule MaruSwagger.PlugTest do
-  use ExSpec, async: true
+  use ExUnit.Case, async: true
   doctest MaruSwagger
   import TestHelper
   alias MaruSwagger.ConfigStruct
@@ -25,7 +25,7 @@ defmodule MaruSwagger.PlugTest do
     end
 
 
-    it "includes the required params" do
+    test "includes the required params" do
       %ConfigStruct{module: MaruSwagger.PlugTest.BasicTest.Api}
       |> MaruSwagger.Plug.generate
       |> assert_route_info("/",

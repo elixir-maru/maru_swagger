@@ -19,9 +19,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,    "~> 0.10" },
-      { :ex_spec, "~> 1.0", only: :test },
-    ]
+    [ { :maru,    "~> 0.10" } ]
   end
 
   defp package do
