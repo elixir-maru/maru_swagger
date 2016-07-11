@@ -30,7 +30,8 @@ defmodule MaruSwagger.PlugTest do
       |> MaruSwagger.Plug.generate
       |> assert_route_info("/",
         %{ "get" => %{
-             description: "hello world action",
+             summary: "hello world action",
+             description: "",
              parameters: [
                %{description: "", in: "query", name: "id", required: true, type: "integer"}
              ],

@@ -3,6 +3,8 @@ defmodule MaruSwagger.ResponseFormatter do
 
   def format(routes, tags, config=%ConfigStruct{}) do
     paths = routes |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params, tag: tag}, result) ->
+      desc = desc || %{}
+      responses = desc[:responses] || [%{code: 200, description: "ok"}]
       url = join_path(url_list)
       if Map.has_key? result, url do
         result
@@ -11,11 +13,12 @@ defmodule MaruSwagger.ResponseFormatter do
       end
       |> put_in([url, String.downcase(method)], %{
         tags: [tag],
-        description: desc || "",
+        description: desc[:detail] || "",
+        summary: desc[:summary] || "",
         parameters: params,
-        responses: %{
-          "200" => %{description: "ok"}
-        }
+        responses: for r <- responses, into: %{} do
+          {to_string(r.code), %{description: r.description}}
+        end
       })
     end)
     wrap_in_swagger_info(paths, tags, config)

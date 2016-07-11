@@ -19,7 +19,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,    "~> 0.10" } ]
+    [ { :maru,    "~> 0.10.3" } ]
   end
 
   defp package do

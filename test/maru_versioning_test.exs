@@ -7,7 +7,13 @@ defmodule MaruVersioningTest do
   describe "basic test" do
     defmodule BasicTest.Homepage do
       use Maru.Router
-      desc "basic get"
+      desc "basic get" do
+        detail "detail of basic get"
+        responses do
+          status :default, desc: "ok"
+          status 500, desc: "error"
+        end
+      end
       params do
         requires :id, type: Integer
       end
@@ -42,16 +48,21 @@ defmodule MaruVersioningTest do
       assert %{
         "/basic" => %{
           "get" => %{
-            description: "basic get",
+            summary: "basic get",
+            description: "detail of basic get",
             parameters: [
               %{description: "", in: "query", name: "id", required: true, type: "integer"}
             ],
-            responses: %{"200" => %{description: "ok"}},
+            responses: %{
+              "default" => %{description: "ok"},
+              "500" => %{description: "error"},
+            },
             tags: ["Version: v1"],
           }
         },
         "/bla" => %{
           "get" => %{
+            summary: "",
             description: "",
             parameters: [],
             responses: %{"200" => %{description: "ok"}},
