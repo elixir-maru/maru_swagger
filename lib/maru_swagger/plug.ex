@@ -8,11 +8,10 @@ defmodule MaruSwagger.Plug do
   end
 
   def call(%Conn{path_info: path}=conn, %ConfigStruct{path: path}=config) do
-    resp =
-      generate(config)
-      |> Poison.encode!(pretty: config.pretty)
+    resp = generate(config) |> Poison.encode!(pretty: config.pretty)
     conn
     |> Conn.put_resp_header("access-control-allow-origin", "*")
+    |> Conn.put_resp_content_type("application/json")
     |> Conn.send_resp(200, resp)
     |> Conn.halt
   end
