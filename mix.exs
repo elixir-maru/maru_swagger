@@ -7,10 +7,10 @@ defmodule MaruSwagger.Mixfile do
       elixir: "~> 1.1",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
-      deps: deps,
+      deps: deps(),
       description: "Add swagger compliant documentation to your maru API",
       source_url: "https://github.com/falood/maru_swagger",
-      package: package,
+      package: package(),
     ]
   end
 
@@ -19,7 +19,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,    "~> 0.10.3" } ]
+    [ { :maru,    "~> 0.10.6" } ]
   end
 
   defp package do

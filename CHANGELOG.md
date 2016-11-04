@@ -3,6 +3,8 @@
 ## v0.8.1-dev
 * Enhancements
   * use buildin UnitTest
+  * support response status codes and desc
+  * support one line list parameter
 
 ## v0.8.0 (2016-6-11)
 * Enhancements

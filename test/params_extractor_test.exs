@@ -87,4 +87,30 @@ defmodule MaruSwagger.ParamsExtractorTest do
     end
   end
 
+  describe "one-line nested list test" do
+    defmodule OneLineNestedList do
+      use Maru.Router
+
+      desc "one-line nested list test"
+      params do
+        requires :foo, type: List[String]
+      end
+      post "/path" do
+        conn |> json(params)
+      end
+    end
+
+    test "one-line nested list test" do
+      route_info = route_from_module(OneLineNestedList, "POST", ["path"])
+      assert [
+        %{ description: "", in: "body", name: "body", required: false, schema: %{
+             properties: %{"foo" => %{
+               type: "array", items: %{type: "string"}
+             }}
+        }}
+      ] = extract_params(route_info)
+    end
+
+  end
+
 end

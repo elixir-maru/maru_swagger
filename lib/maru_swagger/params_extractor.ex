@@ -41,33 +41,39 @@ defmodule MaruSwagger.ParamsExtractor do
       end
     end
 
-    defp format_param(%Information{children: []}=param) do
-      { param.param_key,
-        %{ description: param.desc || "",
-           type:        param.type,
-           required:    param.required,
-         }
+
+    defp format_param(param) do
+      {param.param_key, do_format_param(param.type, param)}
+    end
+
+    defp do_format_param("map", param) do
+      %{ type: "object",
+         properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{}),
       }
     end
 
-    defp format_param(%Information{type: "map"}=param) do
-      { param.param_key,
-        %{ type: "object",
+    defp do_format_param("list", param) do
+      %{ type: "array",
+         items: %{
+           type: "object",
            properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{}),
          }
       }
     end
 
-    defp format_param(%Information{type: "list"}=param) do
-      { param.param_key,
-        %{ type: "array",
-           items: %{
-             type: "object",
-             properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{}),
-           }
-         }
+    defp do_format_param({:list, type}, param) do
+      %{ type: "array",
+         items: do_format_param(type, param),
       }
     end
+
+    defp do_format_param(type, param) do
+      %{ description: param.desc || "",
+         type:        type,
+         required:    param.required,
+      }
+    end
+
   end
 
   defmodule NonGetFormDataParamsGenerator do
@@ -111,9 +117,11 @@ defmodule MaruSwagger.ParamsExtractor do
     end).generate(param_list, path)
   end
 
-  defp judge_adapter([]),                    do: :form_data
-  defp judge_adapter([%{children: []} | t]), do: judge_adapter(t)
-  defp judge_adapter(_),                     do: :body
+  defp judge_adapter([]),                        do: :form_data
+  defp judge_adapter([%{type: "list"} | _]),     do: :body
+  defp judge_adapter([%{type: "map"} | _]),      do: :body
+  defp judge_adapter([%{type: {:list, _}} | _]), do: :body
+  defp judge_adapter([_ | t]),                   do: judge_adapter(t)
 
   def filter_information(param_list) do
     Enum.filter(param_list, fn
