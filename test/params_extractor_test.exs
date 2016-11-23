@@ -53,6 +53,24 @@ defmodule MaruSwagger.ParamsExtractorTest do
       post "/map" do
         conn |> json(params)
       end
+
+      desc "dependent params"
+      params do
+        requires :foo, type: Integer
+        given [foo: fn val -> val > 10 end] do
+          optional :bar
+          given :bar do
+            requires :qux
+          end
+        end
+        given [foo: fn val -> val < 10 end] do
+          requires :baz
+        end
+      end
+      post "/dependent" do
+        conn |> json(params)
+      end
+
     end
 
     defmodule BasicTest.Api do
@@ -83,6 +101,16 @@ defmodule MaruSwagger.ParamsExtractorTest do
                "first" => %{ description: "", required: true, type: "string" },
                "last" => %{ description: "", required: true, type: "string" },
                           }}}}}
+      ] = extract_params(route_info)
+    end
+
+    test "dependent params" do
+      route_info = route_from_module(BasicTest.Homepage, "POST", ["dependent"])
+      assert [
+        %{name: "foo", required: true, type: "integer"},
+        %{name: "bar", required: false, type: "string"},
+        %{name: "qux", required: false, type: "string"},
+        %{name: "baz", required: false, type: "string"},
       ] = extract_params(route_info)
     end
   end

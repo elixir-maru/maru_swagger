@@ -5,6 +5,7 @@
   * use buildin UnitTest
   * support response status codes and desc
   * support one line list parameter
+  * support dependent parameter
 
 ## v0.8.0 (2016-6-11)
 * Enhancements

@@ -1,5 +1,6 @@
 defmodule MaruSwagger.ParamsExtractor do
-  alias Maru.Struct.Parameter.Information
+  alias Maru.Struct.Parameter.Information, as: PI
+  alias Maru.Struct.Dependent.Information, as: DI
 
   defmodule NonGetBodyParamsGenerator do
     def generate(param_list, path) do
@@ -125,9 +126,34 @@ defmodule MaruSwagger.ParamsExtractor do
 
   def filter_information(param_list) do
     Enum.filter(param_list, fn
-      %Information{} -> true
-      _              -> false
+      %PI{} -> true
+      %DI{} -> true
+      _     -> false
+    end) |> flatten_dependents
+  end
+
+  def flatten_dependents(param_list, force_optional \\ false) do
+    Enum.reduce(param_list, [], fn
+      %PI{}=i, acc when force_optional ->
+        do_append(acc, %{i | required: false})
+      %PI{}=i, acc ->
+        do_append(acc, i)
+      %DI{children: children}, acc ->
+        flatten_dependents(children, true)
+        |> Enum.reduce(acc, fn(i, deps) ->
+          do_append(deps, i)
+        end)
     end)
+  end
+
+  defp do_append(param_list, i) do
+    Enum.any?(param_list, fn(param) ->
+      param.param_key == i.param_key
+    end)
+    |> case do
+      true  -> param_list
+      false -> param_list ++ [i]
+    end
   end
 
 end
