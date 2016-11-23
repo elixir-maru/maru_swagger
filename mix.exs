@@ -23,7 +23,8 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp package do
-    %{ licenses: ["BSD 3-Clause"],
+    %{ maintainers: ["Xiangrong Hao", "Roman Heinrich", "Cifer"],
+       licenses: ["BSD 3-Clause"],
        links: %{"Github" => "https://github.com/falood/maru_swagger"}
      }
   end
