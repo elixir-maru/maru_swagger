@@ -1,6 +1,6 @@
 ## Changelog
 
-## v0.8.1-dev
+## v0.8.1 (2016-11-23)
 * Enhancements
   * use buildin UnitTest
   * support response status codes and desc
