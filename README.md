@@ -1,7 +1,7 @@
 MaruSwagger
 ===========
 
-[![Build status](https://img.shields.io/travis/falood/maru_swagger.svg?style=flat-square)](https://travis-ci.org/falood/maru_swagger)
+[![Build status](https://img.shields.io/travis/elixir-maru/maru_swagger.svg?style=flat-square)](https://travis-ci.org/elixir-maru/maru_swagger)
 [![hex.pm Version](https://img.shields.io/hexpm/v/maru_swagger.svg?style=flat-square)](https://hex.pm/packages/maru_swagger)
 [![Hex downloads](https://img.shields.io/hexpm/dt/maru_swagger.svg?style=flat-square)](https://hex.pm/packages/maru_swagger)
 
@@ -11,7 +11,7 @@ GOTCHA: Please keep `swagger` DSL out of `version`!
 
 ```elixir
 def deps do
-  [ {:maru_swagger, github: "falood/maru_swagger"} ]
+  [ {:maru_swagger, github: "elixir-maru/maru_swagger"} ]
 end
 
 defmodule Router do
