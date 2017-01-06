@@ -1,5 +1,9 @@
 ## Changelog
 
+## v0.8.2 (2016-01-06)
+* Enhancements
+  * add force_json option
+
 ## v0.8.1 (2016-11-23)
 * Enhancements
   * use buildin UnitTest
