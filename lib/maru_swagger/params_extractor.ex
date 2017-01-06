@@ -93,11 +93,11 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   alias Maru.Struct.Route
-  def extract_params(%Route{method: {:_, [], nil}}=ep) do
-    %{ep | method: "MATCH"} |> extract_params
+  def extract_params(%Route{method: {:_, [], nil}}=ep, config) do
+    extract_params(%{ep | method: "MATCH"}, config)
   end
 
-  def extract_params(%Route{method: "GET", path: path, parameters: parameters}) do
+  def extract_params(%Route{method: "GET", path: path, parameters: parameters}, _config) do
     for param <- parameters do
       %{ name:        param.param_key,
          description: param.desc || "",
@@ -107,15 +107,21 @@ defmodule MaruSwagger.ParamsExtractor do
       }
     end
   end
-  def extract_params(%Route{method: "GET"}), do: []
-  def extract_params(%Route{parameters: []}), do: []
+  def extract_params(%Route{method: "GET"}, _config), do: []
+  def extract_params(%Route{parameters: []}, _config), do: []
 
-  def extract_params(%Route{parameters: param_list, path: path}) do
+  def extract_params(%Route{parameters: param_list, path: path}, config) do
     param_list = filter_information(param_list)
-    (case judge_adapter(param_list) do
-      :body      -> NonGetBodyParamsGenerator
-      :form_data -> NonGetFormDataParamsGenerator
-    end).generate(param_list, path)
+    generator =
+      if config.force_json do
+        NonGetBodyParamsGenerator
+      else
+        case judge_adapter(param_list) do
+          :body      -> NonGetBodyParamsGenerator
+          :form_data -> NonGetFormDataParamsGenerator
+        end
+      end
+    generator.generate(param_list, path)
   end
 
   defp judge_adapter([]),                        do: :form_data

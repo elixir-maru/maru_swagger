@@ -31,7 +31,7 @@ defmodule TestHelper do
   @doc """
   shortcut to extract_params
   """
-  def extract_params(route) do
-    MaruSwagger.ParamsExtractor.extract_params(route)
+  def extract_params(route, config \\ %{force_json: false}) do
+    MaruSwagger.ParamsExtractor.extract_params(route, config)
   end
 end

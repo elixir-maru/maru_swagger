@@ -24,6 +24,13 @@ defmodule MaruSwagger.ParamsExtractorTest do
         %{description: "", in: "formData", name: "email", required: true, type: "string"},
       ] == extract_params(route_info)
     end
+
+    test "force json" do
+      route_info = route_from_module(BasicPostApi, "POST", ["res1"])
+      assert [
+        %{description: "", in: "body", name: "body", required: false, schema: %{properties: %{"email" => %{description: "", required: true, type: "string"}, "user_name" => %{description: "", required: true, type: "string"}}}}
+      ] == extract_params(route_info, %{force_json: true})
+    end
   end
 
 
@@ -139,7 +146,6 @@ defmodule MaruSwagger.ParamsExtractorTest do
         }}
       ] = extract_params(route_info)
     end
-
   end
 
 end

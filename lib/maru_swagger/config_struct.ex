@@ -3,19 +3,22 @@ defmodule MaruSwagger.ConfigStruct do
     :path,           # [string]  where to mount the Swagger JSON
     :module,         # [atom]    Maru API module
     :version,        # [string]  version
+    :force_json,     # [boolean] force JSON for all params instead of formData
     :pretty,         # [boolean] should JSON output be prettified?
-    :swagger_inject  # [keyword list] key-values to inject directly into root of Swagger JSON
+    :swagger_inject, # [keyword list] key-values to inject directly into root of Swagger JSON
   ]
 
   def from_opts(opts) do
     path           = opts |> Keyword.fetch!(:at) |> Maru.Builder.Path.split
     module         = opts |> Keyword.fetch!(:module)
+    force_json     = opts |> Keyword.get(:force_json, false)
     pretty         = opts |> Keyword.get(:pretty, false)
     swagger_inject = opts |> Keyword.get(:swagger_inject, []) |> Keyword.put_new_lazy(:basePath, base_path_func(module)) |> check_swagger_inject_keys
 
     %__MODULE__{
       path: path,
       module: module,
+      force_json: force_json,
       pretty: pretty,
       swagger_inject: swagger_inject,
     }

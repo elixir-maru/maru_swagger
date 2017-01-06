@@ -36,12 +36,12 @@ defmodule MaruSwagger.Plug do
       |> Enum.map(fn v -> %{name: tag_name(v)} end)
     routes =
       routes
-      |> Enum.map(&extract_route(&1, adapter))
+      |> Enum.map(&extract_route(&1, adapter, config))
     MaruSwagger.ResponseFormatter.format(routes, tags, config)
   end
 
-  defp extract_route(ep, adapter) do
-    params = ep |> MaruSwagger.ParamsExtractor.extract_params
+  defp extract_route(ep, adapter, config) do
+    params = MaruSwagger.ParamsExtractor.extract_params(ep, config)
     path   = adapter.path_for_params(ep.path, ep.version)
     method = case ep.method do
       {:_, [], nil} -> "MATCH"
