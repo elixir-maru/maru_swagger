@@ -20,6 +20,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
         requires :id, type: Integer
       end
       get "/" do
+        _ = params
         conn |> json(%{ hello: :world })
       end
 

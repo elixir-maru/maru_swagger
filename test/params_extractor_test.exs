@@ -38,6 +38,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
         end
       end
       post "/list" do
+        _ = params
         conn |> json(%{ hello: :world })
       end
 

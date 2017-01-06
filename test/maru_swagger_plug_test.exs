@@ -8,12 +8,14 @@ defmodule MaruSwagger.PlugTest do
   describe "basic test" do
     defmodule BasicTest.Homepage do
       use Maru.Router
+      @test false
 
       desc "hello world action"
       params do
         requires :id, type: Integer
       end
       get "/" do
+        _ = params
         conn |> json(%{ hello: :world })
       end
     end
@@ -21,6 +23,8 @@ defmodule MaruSwagger.PlugTest do
 
     defmodule BasicTest.Api do
       use Maru.Router
+      @test false
+
       mount MaruSwagger.PlugTest.BasicTest.Homepage
     end
 

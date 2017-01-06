@@ -23,7 +23,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,   "~> 0.10.6" },
+    [ { :maru,   "~> 0.11.3" },
       { :ex_doc, "~> 0.14", only: :docs },
     ]
   end
