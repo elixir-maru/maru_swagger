@@ -2,7 +2,6 @@ defmodule MaruSwagger.ConfigStruct do
   defstruct [
     :path,           # [string]  where to mount the Swagger JSON
     :module,         # [atom]    Maru API module
-    :version,        # [string]  version
     :force_json,     # [boolean] force JSON for all params instead of formData
     :pretty,         # [boolean] should JSON output be prettified?
     :swagger_inject, # [keyword list] key-values to inject directly into root of Swagger JSON
