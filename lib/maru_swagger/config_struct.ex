@@ -42,7 +42,7 @@ defmodule MaruSwagger.ConfigStruct do
 
   defp check_swagger_inject_keys(swagger_inject) do
     swagger_inject |> Enum.filter(fn {k, v} ->
-      k in allowed_swagger_fields and not v in [nil, ""]
+      k in allowed_swagger_fields() and not v in [nil, ""]
     end)
   end
 

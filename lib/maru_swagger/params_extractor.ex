@@ -33,10 +33,10 @@ defmodule MaruSwagger.ParamsExtractor do
       param_list
       |> Enum.map(&format_param/1)
       |> case do
-        []     -> default_body
+        []     -> default_body()
         params ->
           params = Enum.into(params, %{})
-          default_body
+          default_body()
           |> put_in([:schema], %{})
           |> put_in([:schema, :properties], params)
       end
