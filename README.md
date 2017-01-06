@@ -25,10 +25,11 @@ defmodule API do
 
   plug Plug.Logger
 
-  swagger at:      "/swagger",         # (required) the mount point for the URL
-          pretty:  true,               # (optional) should JSON be pretty-printed?
-          only:    [:dev],             # (optional) the environments swagger works
-          except:  [:prod],            # (optional) the environments swagger NOT works
+  swagger at:         "/swagger",      # (required) the mount point for the URL
+          pretty:     true,            # (optional) should JSON be pretty-printed?
+          only:       [:dev],          # (optional) the environments swagger works
+          except:     [:prod],         # (optional) the environments swagger NOT works
+          force_json: true,            # (optional) force JSON for all params instead of formData
 
           swagger_inject: [            # (optional) this will be directly injected into the root Swagger JSON
             host: "myapi.com",
