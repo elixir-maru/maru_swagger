@@ -25,14 +25,26 @@ defmodule MaruSwagger.ResponseFormatter do
   end
 
   defp wrap_in_swagger_info(paths, tags, config=%ConfigStruct{}) do
-    res = %{
-      swagger: "2.0",
-      info: %{
-        title: "Swagger API for #{elixir_module_name(config.module)}",
-      },
-      paths: paths,
-      tags: tags,
-    }
+    res = if is_nil(config.info) || length(config.info) == 0 do
+      %{
+        swagger: "2.0",
+        info: %{
+          title: "Swagger API for #{elixir_module_name(config.module)}",
+        },
+        paths: paths,
+        tags: tags,
+      }
+    else
+      %{
+        swagger: "2.0",
+        info: %{
+          title: config.info[:title],
+          description: config.info[:desc],
+        },
+        paths: paths,
+        tags: tags,
+      }
+    end
     for {k,v} <- (config.swagger_inject || []), into: res, do: {k,v}
   end
 

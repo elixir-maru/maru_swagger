@@ -5,6 +5,7 @@ defmodule MaruSwagger.ConfigStruct do
     :force_json,     # [boolean] force JSON for all params instead of formData
     :pretty,         # [boolean] should JSON output be prettified?
     :swagger_inject, # [keyword list] key-values to inject directly into root of Swagger JSON
+    :info,           # [keyword list] key-values to inject directly into root of Swagger JSON
   ]
 
   def from_opts(opts) do
@@ -13,6 +14,7 @@ defmodule MaruSwagger.ConfigStruct do
     force_json     = opts |> Keyword.get(:force_json, false)
     pretty         = opts |> Keyword.get(:pretty, false)
     swagger_inject = opts |> Keyword.get(:swagger_inject, []) |> Keyword.put_new_lazy(:basePath, base_path_func(module)) |> check_swagger_inject_keys
+    info           = opts |> Keyword.get(:info, []) |> check_info_inject_keys
 
     %__MODULE__{
       path: path,
@@ -20,6 +22,7 @@ defmodule MaruSwagger.ConfigStruct do
       force_json: force_json,
       pretty: pretty,
       swagger_inject: swagger_inject,
+      info: info
     }
   end
 
@@ -50,6 +53,16 @@ defmodule MaruSwagger.ConfigStruct do
 
   defp allowed_swagger_fields do
     [:host, :basePath, :schemes, :consumes, :produces]
+  end
+
+  defp check_info_inject_keys(info) do
+    info |> Enum.filter(fn {k, v} ->
+      k in allowed_info_fields() and not v in [nil, ""]
+    end)
+  end
+
+  defp allowed_info_fields do
+    [:title, :desc]
   end
 
 end

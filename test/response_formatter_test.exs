@@ -72,5 +72,17 @@ defmodule MaruSwagger.ResponseFormatterTest do
       assert json.basePath == "/api"
       assert json.host == "myapi.com"
     end
+    test "swagger info config" do
+
+      swagger_docs =
+        %ConfigStruct{
+          module: MaruSwagger.ResponseFormatterTest.BasicTest.Homepage,
+          info: [title: "title", desc: "description"]
+        } |> MaruSwagger.Plug.generate
+
+      assert swagger_docs |> get_in([:info]) |> get_in([:title]) =~ "title"
+      assert swagger_docs |> get_in([:info]) |> get_in([:description]) =~ "description"
+      assert swagger_docs |> get_in([:swagger]) == "2.0"
+    end
   end
 end
