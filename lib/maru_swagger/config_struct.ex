@@ -5,7 +5,7 @@ defmodule MaruSwagger.ConfigStruct do
     :force_json,     # [boolean] force JSON for all params instead of formData
     :pretty,         # [boolean] should JSON output be prettified?
     :swagger_inject, # [keyword list] key-values to inject directly into root of Swagger JSON
-    :info,           # [keyword list] key-values to inject directly into root of Swagger JSON
+    :info,           # [keyword list] key-values to inject directly into info of Swagger JSON
   ]
 
   def from_opts(opts) do
@@ -22,7 +22,7 @@ defmodule MaruSwagger.ConfigStruct do
       force_json: force_json,
       pretty: pretty,
       swagger_inject: swagger_inject,
-      info: info
+      info: info,
     }
   end
 
