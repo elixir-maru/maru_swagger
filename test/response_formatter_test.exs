@@ -63,7 +63,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
         } |> MaruSwagger.Plug.generate
 
 
-      assert swagger_docs |> get_in([:info, :title]) =~ "MaruSwagger.ResponseFormatterTest.BasicTest.Homepage"
+      assert swagger_docs |> get_in([:info, :title]) == "Swagger API for MaruSwagger.ResponseFormatterTest.BasicTest.Homepage"
       assert swagger_docs |> get_in([:swagger]) == "2.0"
     end
 
@@ -71,6 +71,18 @@ defmodule MaruSwagger.ResponseFormatterTest do
       json = get_response(BasicTest.API, conn(:get, "/swagger/v1.json"))
       assert json.basePath == "/api"
       assert json.host == "myapi.com"
+    end
+    test "swagger info config" do
+
+      swagger_docs =
+        %ConfigStruct{
+          module: MaruSwagger.ResponseFormatterTest.BasicTest.Homepage,
+          info: [title: "title", desc: "description"]
+        } |> MaruSwagger.Plug.generate
+
+      assert swagger_docs |> get_in([:info, :title]) == "title"
+      assert swagger_docs |> get_in([:info, :description]) == "description"
+      assert swagger_docs |> get_in([:swagger]) == "2.0"
     end
   end
 end
