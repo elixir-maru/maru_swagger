@@ -63,7 +63,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
         } |> MaruSwagger.Plug.generate
 
 
-      assert swagger_docs |> get_in([:info, :title]) =~ "MaruSwagger.ResponseFormatterTest.BasicTest.Homepage"
+      assert swagger_docs |> get_in([:info, :title]) == "Swagger API for MaruSwagger.ResponseFormatterTest.BasicTest.Homepage"
       assert swagger_docs |> get_in([:swagger]) == "2.0"
     end
 
@@ -80,8 +80,8 @@ defmodule MaruSwagger.ResponseFormatterTest do
           info: [title: "title", desc: "description"]
         } |> MaruSwagger.Plug.generate
 
-      assert swagger_docs |> get_in([:info]) |> get_in([:title]) =~ "title"
-      assert swagger_docs |> get_in([:info]) |> get_in([:description]) =~ "description"
+      assert swagger_docs |> get_in([:info, :title]) == "title"
+      assert swagger_docs |> get_in([:info, :description]) == "description"
       assert swagger_docs |> get_in([:swagger]) == "2.0"
     end
   end
