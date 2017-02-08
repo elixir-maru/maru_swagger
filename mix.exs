@@ -23,7 +23,7 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,   github: "Skipper1992/maru_swagger" },
+    [ { :maru,   github: "Skipper1992/maru" },
       { :ex_doc, "~> 0.14", only: :docs },
     ]
   end
