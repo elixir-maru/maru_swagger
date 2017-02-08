@@ -7,13 +7,19 @@ defmodule MaruSwagger.ParamsExtractorTest do
   describe "POST" do
     defmodule BasicPostApi do
       use Maru.Router
-      desc "res1 create"
-      params do
-        requires :name, type: :string, source: "user_name"
-        requires :email, type: :string
-      end
-      post "/res1" do
-        conn |> json(params)
+      desc "res1 create" do
+        
+        headers do
+          need :token, type: :string, desc: "ok"
+        end
+
+        params do
+          requires :name, type: :string, source: "user_name"
+          requires :email, type: :string
+        end
+        post "/res1" do
+          conn |> json(params)
+        end
       end
     end
 
