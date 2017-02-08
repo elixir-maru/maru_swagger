@@ -3,16 +3,11 @@ defmodule MaruSwagger.ParamsExtractorTest do
   doctest MaruSwagger.ParamsExtractor
   import TestHelper
 
-
   describe "POST" do
     defmodule BasicPostApi do
       use Maru.Router
       desc "res1 create" do
         
-        headers do
-          need :token, type: :string, desc: "ok"
-        end
-
         params do
           requires :name, type: :string, source: "user_name"
           requires :email, type: :string
@@ -25,6 +20,7 @@ defmodule MaruSwagger.ParamsExtractorTest do
 
     test "works with basic POST params" do
       route_info = route_from_module(BasicPostApi, "POST", ["res1"])
+      
       assert [
         %{description: "", in: "formData", name: "user_name", required: true, type: "string"},
         %{description: "", in: "formData", name: "email", required: true, type: "string"},

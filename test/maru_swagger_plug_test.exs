@@ -11,9 +11,6 @@ defmodule MaruSwagger.PlugTest do
       @test false
 
       desc "hello world action" do
-        headers do
-          need :token, type: :string, desc: "ok"
-        end
 
         params do
           requires :id, type: Integer
@@ -42,7 +39,6 @@ defmodule MaruSwagger.PlugTest do
              summary: "hello world action",
              description: "",
              parameters: [
-               %{description: "ok", in: "header", name: "token", required: true, type: "string"},
                %{description: "", in: "query", name: "id", required: true, type: "integer"}
              ],
              responses: %{"200" => %{description: "ok"}},

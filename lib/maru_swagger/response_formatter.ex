@@ -31,7 +31,6 @@ defmodule MaruSwagger.ResponseFormatter do
                 required: true
                 } end)
               params = Enum.concat headers, params
-              # IEx.pry
               params
           end
         end,
