@@ -2,8 +2,7 @@ defmodule MaruSwagger.Plug do
   use Maru.Middleware
   alias MaruSwagger.ConfigStruct
   alias Plug.Conn
-  require IEx
-
+  
   def init(opts) do
     ConfigStruct.from_opts(opts)
   end

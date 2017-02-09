@@ -1,7 +1,5 @@
 defmodule MaruSwagger.ResponseFormatter do
   alias MaruSwagger.ConfigStruct
-
-  require IEx
   
   def format(routes, tags, config=%ConfigStruct{}) do
     paths = routes |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params, tag: tag}, result) ->
