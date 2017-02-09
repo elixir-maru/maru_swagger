@@ -2,8 +2,6 @@ defmodule MaruSwagger.ParamsExtractor do
   alias Maru.Struct.Parameter.Information, as: PI
   alias Maru.Struct.Dependent.Information, as: DI
 
-  require IEx
-
   defmodule NonGetBodyParamsGenerator do
     def generate(param_list, path, headers) do
       {path_param_list, body_param_list} = param_list |> MaruSwagger.ParamsExtractor.filter_information |> Enum.partition(&(&1.attr_name in path))
@@ -15,11 +13,10 @@ defmodule MaruSwagger.ParamsExtractor do
       ]
       else
         headers
-        |> MaruSwagger.ParamsExtractor.filter_head_information
         |> Enum.map(fn(head) -> %{
-                description: head.desc || "",
-                name: head.param_key,
-                type: head.type,
+                description: head[:description] || "",
+                name: head[:attr_name],
+                type: head[:type],
                 in: "header",
                 required: true
                 } end)
@@ -112,11 +109,10 @@ defmodule MaruSwagger.ParamsExtractor do
         param_list
       else
         headers = headers
-        |> MaruSwagger.ParamsExtractor.filter_head_information
-        |> Enum.map(fn(head) -> %{
-                description: head.desc || "",
-                name: head.param_key,
-                type: head.type,
+          |> Enum.map(fn(head) -> %{
+                description: head[:description] || "",
+                name: head[:attr_name],
+                type: head[:type],
                 in: "header",
                 required: true
                 } end)
@@ -172,18 +168,6 @@ defmodule MaruSwagger.ParamsExtractor do
     end) |> flatten_dependents
   end
 
-  def filter_head_information(headers) do
-    headers = headers
-      |> Enum.map(fn(head) -> 
-        %Maru.Struct.Parameter.Information{
-          attr_name: head[:attr_name],
-          param_key: head[:attr_name],
-          desc: head[:description],
-          type: head[:type],
-          required: true
-        }
-      end)
-  end
 
   def flatten_dependents(param_list, force_optional \\ false) do
     Enum.reduce(param_list, [], fn
