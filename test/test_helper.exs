@@ -20,7 +20,7 @@ defmodule TestHelper do
   """
   def route_from_module(module, version \\ nil, method, path_list) do
     route = Enum.find(module.__routes__, fn x ->
-      x.path == path_list &&
+      path_match?(path_list, x.path) &&
         x.method == String.upcase(method) &&
         x.version == version
     end)
@@ -34,4 +34,9 @@ defmodule TestHelper do
   def extract_params(route, config \\ %{force_json: false}) do
     MaruSwagger.ParamsExtractor.extract_params(route, config)
   end
+
+  defp path_match?([], []),                         do: true
+  defp path_match?([h|t1], [h|t2]),                 do: path_match?(t1, t2)
+  defp path_match?([_|t1], [h|t2]) when is_atom(h), do: path_match?(t1, t2)
+  defp path_match?(_, _),                           do: false
 end

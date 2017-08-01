@@ -15,6 +15,14 @@ defmodule MaruSwagger.ParamsExtractorTest do
       post "/res1" do
         conn |> json(params)
       end
+
+      desc "parameter in path"
+      params do
+        requires :foo, type: Integer
+      end
+      post "/:foo" do
+        conn |> json(params)
+      end
     end
 
     test "works with basic POST params" do
@@ -30,6 +38,13 @@ defmodule MaruSwagger.ParamsExtractorTest do
       assert [
         %{description: "", in: "body", name: "body", required: false, schema: %{properties: %{"email" => %{description: "", required: true, type: "string"}, "user_name" => %{description: "", required: true, type: "string"}}}}
       ] == extract_params(route_info, %{force_json: true})
+    end
+
+    test "basic POST params in path" do
+      route_info = route_from_module(BasicPostApi, "POST", ["123"])
+      assert [
+        %{description: "", in: "path", name: "foo", required: true, type: "integer"},
+      ] == extract_params(route_info)
     end
   end
 

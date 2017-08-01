@@ -1,6 +1,8 @@
 ## Changelog
 
 ## v0.8.3-dev
+* Bugfix
+  * show paramter in path as query
 
 ## v0.8.2 (2016-01-06)
 * Enhancements
