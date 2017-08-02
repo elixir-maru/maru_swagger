@@ -1,6 +1,6 @@
 defmodule MaruSwagger.ResponseFormatter do
   alias MaruSwagger.ConfigStruct
-
+  
   def format(routes, tags, config=%ConfigStruct{}) do
     paths = routes |> List.foldr(%{}, fn (%{desc: desc, method: method, path: url_list, params: params, tag: tag}, result) ->
       desc = desc || %{}
@@ -15,7 +15,23 @@ defmodule MaruSwagger.ResponseFormatter do
         tags: [tag],
         description: desc[:detail] || "",
         summary: desc[:summary] || "",
-        parameters: params,
+        parameters: if is_nil(desc[:headers]) do
+          params
+        else
+          case length(desc[:headers]) do
+            0 -> params
+            _ -> 
+              headers = Enum.map(desc[:headers], fn(head) -> %{
+                description: head[:description],
+                name: head[:attr_name],
+                type: head[:type],
+                in: "header",
+                required: true
+                } end)
+              params = Enum.concat headers, params
+              params
+          end
+        end,
         responses: for r <- responses, into: %{} do
           {to_string(r.code), %{description: r.description}}
         end

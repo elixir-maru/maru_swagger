@@ -2,7 +2,7 @@ defmodule MaruSwagger.Plug do
   use Maru.Middleware
   alias MaruSwagger.ConfigStruct
   alias Plug.Conn
-
+  
   def init(opts) do
     ConfigStruct.from_opts(opts)
   end
@@ -42,6 +42,7 @@ defmodule MaruSwagger.Plug do
 
   defp extract_route(ep, adapter, config) do
     params = MaruSwagger.ParamsExtractor.extract_params(ep, config)
+    
     path   = adapter.path_for_params(ep.path, ep.version)
     method = case ep.method do
       {:_, [], nil} -> "MATCH"

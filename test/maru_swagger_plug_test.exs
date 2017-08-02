@@ -10,13 +10,15 @@ defmodule MaruSwagger.PlugTest do
       use Maru.Router
       @test false
 
-      desc "hello world action"
-      params do
-        requires :id, type: Integer
-      end
-      get "/" do
-        _ = params
-        conn |> json(%{ hello: :world })
+      desc "hello world action" do
+
+        params do
+          requires :id, type: Integer
+        end
+        get "/" do
+          _ = params
+          conn |> json(%{ hello: :world })
+        end
       end
     end
 

@@ -3,11 +3,27 @@ defmodule MaruSwagger.ParamsExtractor do
   alias Maru.Struct.Dependent.Information, as: DI
 
   defmodule NonGetBodyParamsGenerator do
-    def generate(param_list, path) do
+    def generate(param_list, path, headers) do
       {path_param_list, body_param_list} = param_list |> MaruSwagger.ParamsExtractor.filter_information |> Enum.partition(&(&1.attr_name in path))
-      [ format_body_params(body_param_list) |
+      
+      
+      if (is_nil(headers)) do
+        [ format_body_params(body_param_list) |
         format_path_params(path_param_list)
       ]
+      else
+        headers
+        |> Enum.map(fn(head) -> %{
+                description: head[:description] || "",
+                name: head[:attr_name],
+                type: head[:type],
+                in: "header",
+                required: true
+                } end)
+      Enum.concat headers, [ format_body_params(body_param_list) |
+        format_path_params(path_param_list)
+      ]
+      end
     end
 
     defp default_body do
@@ -78,8 +94,8 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   defmodule NonGetFormDataParamsGenerator do
-    def generate(param_list, path) do
-      param_list
+    def generate(param_list, path, headers) do
+      param_list = param_list
       |> MaruSwagger.ParamsExtractor.filter_information
       |> Enum.map(fn param ->
         %{ name:        param.param_key,
@@ -89,6 +105,19 @@ defmodule MaruSwagger.ParamsExtractor do
            in:          param.attr_name in path && "path" || "formData",
          }
       end)
+      if (is_nil(headers)) do
+        param_list
+      else
+        headers = headers
+          |> Enum.map(fn(head) -> %{
+                description: head[:description] || "",
+                name: head[:attr_name],
+                type: head[:type],
+                in: "header",
+                required: true
+                } end)
+        Enum.concat headers, param_list
+      end
     end
   end
 
@@ -110,7 +139,7 @@ defmodule MaruSwagger.ParamsExtractor do
   def extract_params(%Route{method: "GET"}, _config), do: []
   def extract_params(%Route{parameters: []}, _config), do: []
 
-  def extract_params(%Route{parameters: param_list, path: path}, config) do
+  def extract_params(%Route{parameters: param_list, path: path, desc: desc}, config) do
     param_list = filter_information(param_list)
     generator =
       if config.force_json do
@@ -121,7 +150,8 @@ defmodule MaruSwagger.ParamsExtractor do
           :form_data -> NonGetFormDataParamsGenerator
         end
       end
-    generator.generate(param_list, path)
+    params = generator.generate(param_list, path, desc[:headers])
+    params
   end
 
   defp judge_adapter([]),                        do: :form_data
@@ -137,6 +167,7 @@ defmodule MaruSwagger.ParamsExtractor do
       _     -> false
     end) |> flatten_dependents
   end
+
 
   def flatten_dependents(param_list, force_optional \\ false) do
     Enum.reduce(param_list, [], fn
