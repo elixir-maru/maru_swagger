@@ -7,7 +7,6 @@ defmodule MaruVersioningTest do
   describe "basic test" do
     defmodule BasicTest.Homepage do
       use Maru.Router
-      @test false
 
       desc "basic get" do
         detail "detail of basic get"
@@ -26,7 +25,6 @@ defmodule MaruVersioningTest do
 
     defmodule BasicTest.Api do
       use Maru.Router
-      @test false
 
       version "v1" do
         get "/bla" do
@@ -81,7 +79,6 @@ defmodule MaruVersioningTest do
   describe "with different versions" do
     defmodule DiffVersions.Homepage do
       use Maru.Router
-      @test false
 
       version "v2" do
         desc "basic get"
@@ -96,7 +93,6 @@ defmodule MaruVersioningTest do
 
     defmodule DiffVersions.Api do
       use Maru.Router
-      @test false
 
       version "v1" do
         get "/bla" do

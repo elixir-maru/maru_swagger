@@ -29,8 +29,11 @@ defmodule MaruSwagger.ConfigStruct do
   defp base_path_func(module) do
     fn ->
       [ "" |
-        if Code.ensure_loaded?(Phoenix) do
-          phoenix_module = Module.concat(Mix.Phoenix.base(), "Router")
+        if apply(Code, :ensure_loaded?, [Phoenix]) do
+          phoenix_module =
+            Mix.Phoenix
+            |> apply(:base, [])
+            |> Module.concat("Router")
           phoenix_module.__routes__ |> Enum.filter(fn r ->
             match?(%{kind: :forward, plug: ^module}, r)
           end)
