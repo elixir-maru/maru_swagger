@@ -1,8 +1,10 @@
 ## Changelog
 
-## v0.8.3-dev
+## v0.8.3 (2017-10-17)
 * Bugfix
   * show paramter in path as query
+* Deprecations
+  * no longer support elixir 1.3
 
 ## v0.8.2 (2016-01-06)
 * Enhancements
