@@ -6,7 +6,7 @@
 * Deprecations
   * no longer support elixir 1.3
 
-## v0.8.2 (2016-01-06)
+## v0.8.2 (2017-01-06)
 * Enhancements
   * add force_json option
 
