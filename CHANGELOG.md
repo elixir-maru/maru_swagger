@@ -1,5 +1,9 @@
 ## Changelog
 
+## v0.8.4 (2018-1-2)
+* Bugfix
+  * validation in parameters test
+
 ## v0.8.3 (2017-10-17)
 * Bugfix
   * show paramter in path as query
