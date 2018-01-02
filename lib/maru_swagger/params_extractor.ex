@@ -98,7 +98,7 @@ defmodule MaruSwagger.ParamsExtractor do
   end
 
   def extract_params(%Route{method: "GET", path: path, parameters: parameters}, _config) do
-    for param <- parameters do
+    for %PI{}=param <- parameters do
       %{ name:        param.param_key,
          description: param.desc || "",
          required:    param.required,

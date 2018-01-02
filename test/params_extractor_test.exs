@@ -163,4 +163,25 @@ defmodule MaruSwagger.ParamsExtractorTest do
     end
   end
 
+  describe "validation in parameters test" do
+    defmodule ValidationInParametes do
+      use Maru.Router
+
+      desc "validation in parameters list test"
+      params do
+        requires :foo
+        requires :bar
+        all_or_none_of [:foo, :bar]
+      end
+      get "/path" do
+        conn |> json(params)
+      end
+    end
+
+    test "validation in parameters test" do
+      route_info = route_from_module(ValidationInParametes, "GET", ["path"])
+      assert [%{name: "foo"}, %{name: "bar"}] = extract_params(route_info)
+    end
+  end
+
 end
