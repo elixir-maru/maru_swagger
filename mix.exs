@@ -2,18 +2,19 @@ defmodule MaruSwagger.Mixfile do
   use Mix.Project
 
   def project do
-    [ app: :maru_swagger,
+    [
+      app: :maru_swagger,
       version: "0.8.4",
       elixir: "~> 1.4",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: "Add swagger compliant documentation to your maru API",
       source_url: "https://github.com/elixir-maru/maru_swagger",
       package: package(),
       docs: [
         extras: ["README.md"],
-        main: "readme",
+        main: "readme"
       ]
     ]
   end
@@ -23,15 +24,14 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [ { :maru,   github: "elixir-maru/maru" },
-      { :ex_doc, "~> 0.14", only: :docs },
-    ]
+    [{:maru, github: "elixir-maru/maru"}, {:ex_doc, "~> 0.14", only: :docs}]
   end
 
   defp package do
-    %{ maintainers: ["Xiangrong Hao", "Roman Heinrich", "Cifer"],
-       licenses: ["BSD 3-Clause"],
-       links: %{"Github" => "https://github.com/elixir-maru/maru_swagger"}
-     }
+    %{
+      maintainers: ["Xiangrong Hao", "Roman Heinrich", "Cifer"],
+      licenses: ["BSD 3-Clause"],
+      links: %{"Github" => "https://github.com/elixir-maru/maru_swagger"}
+    }
   end
 end

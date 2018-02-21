@@ -19,13 +19,13 @@ defmodule TestHelper do
       # TestHelper.route_from_module(BasicTest.Homepage, "v1", :post, ["complex"])
   """
   def route_from_module(module, version \\ nil, method, path_list) do
-    route = Enum.find(module.__routes__, fn x ->
-      path_match?(path_list, x.path) &&
-        x.method == method &&
-        x.version == version
-    end)
-    parameters = Enum.map(route.parameters, &(&1.information))
-    %{ route | parameters: parameters }
+    route =
+      Enum.find(module.__routes__, fn x ->
+        path_match?(path_list, x.path) && x.method == method && x.version == version
+      end)
+
+    parameters = Enum.map(route.parameters, & &1.information)
+    %{route | parameters: parameters}
   end
 
   @doc """
@@ -35,8 +35,8 @@ defmodule TestHelper do
     MaruSwagger.ParamsExtractor.extract_params(route, config)
   end
 
-  defp path_match?([], []),                         do: true
-  defp path_match?([h|t1], [h|t2]),                 do: path_match?(t1, t2)
-  defp path_match?([_|t1], [h|t2]) when is_atom(h), do: path_match?(t1, t2)
-  defp path_match?(_, _),                           do: false
+  defp path_match?([], []), do: true
+  defp path_match?([h | t1], [h | t2]), do: path_match?(t1, t2)
+  defp path_match?([_ | t1], [h | t2]) when is_atom(h), do: path_match?(t1, t2)
+  defp path_match?(_, _), do: false
 end
