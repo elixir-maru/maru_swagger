@@ -1,10 +1,10 @@
 defmodule MaruSwagger.ParamsExtractor do
-  alias Maru.Struct.Parameter.Information, as: PI
-  alias Maru.Struct.Dependent.Information, as: DI
+  alias Maru.Builder.Parameter.Information, as: PI
+  alias Maru.Builder.Parameter.Dependent.Information, as: DI
 
   defmodule NonGetBodyParamsGenerator do
     def generate(param_list, path) do
-      {path_param_list, body_param_list} = param_list |> MaruSwagger.ParamsExtractor.filter_information |> Enum.partition(&(&1.attr_name in path))
+      {path_param_list, body_param_list} = param_list |> MaruSwagger.ParamsExtractor.filter_information |> Enum.split_with(&(&1.attr_name in path))
       [ format_body_params(body_param_list) |
         format_path_params(path_param_list)
       ]
@@ -92,12 +92,9 @@ defmodule MaruSwagger.ParamsExtractor do
     end
   end
 
-  alias Maru.Struct.Route
-  def extract_params(%Route{method: {:_, [], nil}}=ep, config) do
-    extract_params(%{ep | method: "MATCH"}, config)
-  end
+  alias Maru.Router
 
-  def extract_params(%Route{method: "GET", path: path, parameters: parameters}, _config) do
+  def extract_params(%Router{method: :get, path: path, parameters: parameters}, _config) do
     for %PI{}=param <- parameters do
       %{ name:        param.param_key,
          description: param.desc || "",
@@ -107,10 +104,10 @@ defmodule MaruSwagger.ParamsExtractor do
       }
     end
   end
-  def extract_params(%Route{method: "GET"}, _config), do: []
-  def extract_params(%Route{parameters: []}, _config), do: []
+  def extract_params(%Router{method: :get}, _config), do: []
+  def extract_params(%Router{parameters: []}, _config), do: []
 
-  def extract_params(%Route{parameters: param_list, path: path}, config) do
+  def extract_params(%Router{parameters: param_list, path: path}, config) do
     param_list = filter_information(param_list)
     generator =
       if config.force_json do

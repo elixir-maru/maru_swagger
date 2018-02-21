@@ -35,8 +35,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
     end
 
     defmodule BasicTest.API do
-      use Maru.Router
-      @make_plug true
+      use Maru.Router, make_plug: true
       use MaruSwagger
 
       swagger at:     "/swagger/v1.json", # (required) the mount point for the URL

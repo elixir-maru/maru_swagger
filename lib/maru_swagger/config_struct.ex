@@ -9,7 +9,7 @@ defmodule MaruSwagger.ConfigStruct do
   ]
 
   def from_opts(opts) do
-    path           = opts |> Keyword.fetch!(:at) |> Maru.Builder.Path.split
+    path           = opts |> Keyword.fetch!(:at) |> Maru.Utils.split_path
     module         = opts |> Keyword.fetch!(:module)
     force_json     = opts |> Keyword.get(:force_json, false)
     pretty         = opts |> Keyword.get(:pretty, false)

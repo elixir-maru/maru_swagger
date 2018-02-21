@@ -11,7 +11,7 @@ defmodule MaruSwagger.ResponseFormatter do
       else
         result |> put_in([url], %{})
       end
-      |> put_in([url, String.downcase(method)], %{
+      |> put_in([url, to_string(method)], %{
         tags: [tag],
         description: desc[:detail] || "",
         summary: desc[:summary] || "",

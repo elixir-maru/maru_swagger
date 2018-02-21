@@ -13,15 +13,15 @@ defmodule TestHelper do
 
   Example:
       # post "/complex", no version ->
-      TestHelper.route_from_module(BasicTest.Homepage, "POST", ["complex"])
+      TestHelper.route_from_module(BasicTest.Homepage, :post, ["complex"])
 
       # post "/complex", "v1" ->
-      # TestHelper.route_from_module(BasicTest.Homepage, "v1", "POST", ["complex"])
+      # TestHelper.route_from_module(BasicTest.Homepage, "v1", :post, ["complex"])
   """
   def route_from_module(module, version \\ nil, method, path_list) do
     route = Enum.find(module.__routes__, fn x ->
       path_match?(path_list, x.path) &&
-        x.method == String.upcase(method) &&
+        x.method == method &&
         x.version == version
     end)
     parameters = Enum.map(route.parameters, &(&1.information))
