@@ -1,7 +1,9 @@
 defmodule MaruSwagger.ConfigStruct do
   defstruct [
+    # [string]  where to mount the Swagger UI
+    :ui_path,    
     # [string]  where to mount the Swagger JSON
-    :path,
+    :sw_path,
     # [atom]    Maru API module
     :module,
     # [boolean] force JSON for all params instead of formData
@@ -15,7 +17,8 @@ defmodule MaruSwagger.ConfigStruct do
   ]
 
   def from_opts(opts) do
-    path = opts |> Keyword.fetch!(:at) |> Maru.Utils.split_path()
+    ui_path = opts |> Keyword.fetch!(:at) |> Maru.Utils.split_path()
+    sw_path = ui_path ++ ["swagger.json"]
     module = opts |> Keyword.fetch!(:module)
     force_json = opts |> Keyword.get(:force_json, false)
     pretty = opts |> Keyword.get(:pretty, false)
@@ -29,7 +32,8 @@ defmodule MaruSwagger.ConfigStruct do
     info = opts |> Keyword.get(:info, []) |> check_info_inject_keys
 
     %__MODULE__{
-      path: path,
+      ui_path: ui_path,
+      sw_path: sw_path,
       module: module,
       force_json: force_json,
       pretty: pretty,

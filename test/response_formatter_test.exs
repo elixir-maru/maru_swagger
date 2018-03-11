@@ -43,7 +43,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
       use MaruSwagger
 
       # (required) the mount point for the URL
-      swagger at: "/swagger/v1.json",
+      swagger at: "/swagger/v1",
               # (optional) should JSON be pretty-printed?
               pretty: true,
               # (optional) this will be directly injected into the root Swagger JSON
@@ -75,7 +75,7 @@ defmodule MaruSwagger.ResponseFormatterTest do
     end
 
     test "works in full integration" do
-      json = get_response(BasicTest.API, conn(:get, "/swagger/v1.json"))
+      json = get_response(BasicTest.API, conn(:get, "/swagger/v1/swagger.json"))
       assert json.basePath == "/api"
       assert json.host == "myapi.com"
     end

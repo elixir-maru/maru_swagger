@@ -18,7 +18,7 @@ defmodule MaruSwagger.ConfigStructTest do
 
     test "requires :at for mounting point" do
       assert %MaruSwagger.ConfigStruct{
-               path: ["swagger", "v1"],
+               ui_path: ["swagger", "v1"],
                pretty: false,
                swagger_inject: []
              } = init(at: "swagger/v1")
@@ -34,7 +34,7 @@ defmodule MaruSwagger.ConfigStructTest do
 
     test "accepts :pretty for JSON output" do
       assert %MaruSwagger.ConfigStruct{
-               path: ["swagger", "v1"],
+               ui_path: ["swagger", "v1"],
                pretty: true,
                swagger_inject: []
              } =
@@ -46,7 +46,7 @@ defmodule MaruSwagger.ConfigStructTest do
 
     test "accepts :prefix to prepend to URLs" do
       assert %MaruSwagger.ConfigStruct{
-               path: ["swagger", "v1"],
+               ui_path: ["swagger", "v1"],
                pretty: true,
                swagger_inject: []
              } =
