@@ -1,5 +1,6 @@
 defmodule MaruSwagger.DSL do
   defmacro swagger(options) do
+    at = options |> Keyword.get(:at)
     only = options |> Keyword.get(:only)
     except = options |> Keyword.get(:except)
 
@@ -13,13 +14,21 @@ defmodule MaruSwagger.DSL do
 
     quote do
       if unquote(guard) do
-        @plugs_before {
-          MaruSwagger.Plug,
-          unquote(options)
-          |> Keyword.drop([:only, :except])
-          |> Keyword.put(:module, __MODULE__),
-          true
-        }
+        @plugs_before [
+          {
+            MaruSwagger.Plug,
+            unquote(options)
+            |> Keyword.drop([:only, :except])
+            |> Keyword.put(:module, __MODULE__),
+            true
+          },
+          {
+            Plug.Static,
+            [at: unquote(at),
+            from: :maru_swagger],
+            true
+          }
+        ]
       end
     end
   end

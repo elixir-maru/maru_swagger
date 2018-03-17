@@ -7,7 +7,16 @@ defmodule MaruSwagger.Plug do
     ConfigStruct.from_opts(opts)
   end
 
-  def call(%Conn{path_info: path} = conn, %ConfigStruct{path: path} = config) do
+  def call(%Conn{path_info: path} = conn, %ConfigStruct{ui_path: path} = _config) do
+    priv_dir = :code.priv_dir(:maru_swagger) |> to_string
+    file = Path.join(priv_dir, "static/index.html")
+    conn
+    |> Conn.put_resp_header("access-control-allow-origin", "*")
+    |> Conn.put_resp_content_type("text/html")
+    |> send_file(200, file)
+    |> Conn.halt()
+  end
+  def call(%Conn{path_info: path} = conn, %ConfigStruct{sw_path: path} = config) do
     resp = generate(config) |> Poison.encode!(pretty: config.pretty)
 
     conn

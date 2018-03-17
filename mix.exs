@@ -24,7 +24,10 @@ defmodule MaruSwagger.Mixfile do
   end
 
   defp deps do
-    [{:maru, github: "elixir-maru/maru"}, {:ex_doc, "~> 0.14", only: :docs}]
+    [
+      {:maru, github: "efcasado/maru", branch: "swagger-ui"},
+      {:ex_doc, "~> 0.14", only: :docs}
+    ]
   end
 
   defp package do

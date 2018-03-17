@@ -25,7 +25,7 @@ defmodule API do
 
   plug Plug.Logger
 
-  swagger at:         "/swagger",      # (required) the mount point for the URL
+  swagger at:         "/api-docs",     # (required) the mount point for the URL
           pretty:     true,            # (optional) should JSON be pretty-printed?
           only:       [:dev],          # (optional) the environments swagger works
           except:     [:prod],         # (optional) the environments swagger NOT works
@@ -46,7 +46,8 @@ defmodule API do
 end
 ```
 
-and then you can get json response from `curl http://127.0.0.1:4000/swagger`.
+and then you can get json response from `curl http://127.0.0.1:4000/api-docs/swagger.json`. The
+Swagger UI can be loaded in `http://127.0.0.1:4000/api-docs/`.
 
 open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in `http://127.0.0.1:4000/swagger` and enjoy maru_swagger.
 
@@ -55,3 +56,4 @@ open [Swagger Petstore](http://petstore.swagger.io) in your borwser and fill in 
 
 * [Cifer](https://github.com/Cifer-Y)
 * [Roman Heinrich](https://github.com/mindreframer)
+* [Enrique Fernandez](https://github.com/efcasado)
