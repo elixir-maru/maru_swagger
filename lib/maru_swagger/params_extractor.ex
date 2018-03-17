@@ -50,6 +50,10 @@ defmodule MaruSwagger.ParamsExtractor do
       {param.param_key, do_format_param(param.type, param)}
     end
 
+    defp do_format_param("float", param) do
+      %{type: "number", format: "float", description: param.desc || "", required: param.required}
+    end
+
     defp do_format_param("map", param) do
       %{type: "object", properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{})}
     end
