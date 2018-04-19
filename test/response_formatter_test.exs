@@ -6,8 +6,9 @@ defmodule MaruSwagger.ResponseFormatterTest do
 
   describe "basic test" do
     def get_response(module, conn) do
+      json_library = Maru.json_library()
       res = module.call(conn, [])
-      {:ok, json} = res.resp_body |> Poison.decode(keys: :atoms)
+      {:ok, json} = res.resp_body |> json_library.decode(keys: :atoms)
       json
     end
 
