@@ -1,5 +1,9 @@
 ## Changelog
 
+## v0.8.5 (2018-4-19)
+* Enhancements
+  * upgrade to maru v0.13.0
+
 ## v0.8.4 (2018-1-2)
 * Bugfix
   * validation in parameters test
