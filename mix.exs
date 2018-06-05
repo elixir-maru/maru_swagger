@@ -25,7 +25,7 @@ defmodule MaruSwagger.Mixfile do
 
   defp deps do
     [
-      {:maru, github: "elixir-maru/maru", brunch: "support-old-elixir-vision"},
+      {:maru, github: "elixir-maru/maru", branch: "support-old-elixir-vision"},
       {:jason, "~> 1.0", optional: true},
       {:cowboy, "~> 2.1", optional: true},
       {:ex_doc, "~> 0.14", only: :docs}
