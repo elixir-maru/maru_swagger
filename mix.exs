@@ -28,7 +28,7 @@ defmodule MaruSwagger.Mixfile do
       {:maru, "~> 0.13 or ~> 0.14"},
       {:jason, "~> 1.0", optional: true},
       {:cowboy, "~> 2.1", optional: true},
-      {:ex_doc, "~> 0.14", only: :docs}
+      {:ex_doc, "~> 0.19", only: :docs}
     ]
   end
 
