@@ -10,7 +10,7 @@ defmodule MaruSwagger.Mixfile do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: "Add swagger compliant documentation to your maru API",
-      source_url: "https://github.com/elixir-maru/maru_swagger",
+      source_url: "https://github.com/lilezek/maru_swagger",
       package: package(),
       docs: [
         extras: ["README.md"],
@@ -36,7 +36,7 @@ defmodule MaruSwagger.Mixfile do
     %{
       maintainers: ["Xiangrong Hao", "Roman Heinrich", "Cifer"],
       licenses: ["BSD 3-Clause"],
-      links: %{"Github" => "https://github.com/elixir-maru/maru_swagger"}
+      links: %{"Github" => "https://github.com/lilezek/maru_swagger", "Original" => "https://github.com/elixir-maru/maru_swagger"}
     }
   end
 end
