@@ -9,7 +9,12 @@ defmodule MaruSwagger.Plug do
 
   def call(%Conn{path_info: path} = conn, %ConfigStruct{path: path} = config) do
     json_library = Maru.json_library()
-    resp = config |> generate() |> json_library.encode!(pretty: config.pretty)
+   
+    resp = 
+    case config.pretty do
+      false -> config |> generate() |> json_library.encode!()
+      _ -> config |> generate() |> json_library.encode!(pretty: config.pretty)
+    end
 
     conn
     |> Conn.put_resp_header("access-control-allow-origin", "*")
