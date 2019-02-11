@@ -55,12 +55,15 @@ defmodule MaruSwagger.ParamsExtractor do
     end
 
     defp do_format_param("map", param) do
-      %{type: "object", properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{})}
+      %{type: "object",
+        description: param.desc || "",
+        properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{})}
     end
 
     defp do_format_param("list", param) do
       %{
         type: "array",
+        description: param.desc || "",
         items: %{
           type: "object",
           properties: param.children |> Enum.map(&format_param/1) |> Enum.into(%{})
@@ -69,7 +72,9 @@ defmodule MaruSwagger.ParamsExtractor do
     end
 
     defp do_format_param({:list, type}, param) do
-      %{type: "array", items: do_format_param(type, param)}
+      %{type: "array",
+        description: param.desc || "",
+        items: do_format_param(type, param)}
     end
 
     defp do_format_param(type, param) do
