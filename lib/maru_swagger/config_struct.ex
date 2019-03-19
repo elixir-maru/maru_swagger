@@ -72,7 +72,7 @@ defmodule MaruSwagger.ConfigStruct do
   end
 
   defp allowed_swagger_fields do
-    [:host, :basePath, :schemes, :consumes, :produces]
+    [:host, :basePath, :schemes, :consumes, :produces, :securityDefinitions, :security]
   end
 
   defp check_info_inject_keys(info) do
