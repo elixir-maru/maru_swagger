@@ -35,9 +35,9 @@ defmodule MaruSwagger.Plug do
 
     tags =
       routes
-      |> Enum.map(& tag_name(&1.path))
+      |> Enum.map(& &1.version)
       |> Enum.uniq()
-      |> Enum.map(& %{name: &1})
+      |> Enum.map(fn v -> %{name: tag_name(v)} end)
 
     routes =
       routes
@@ -61,11 +61,10 @@ defmodule MaruSwagger.Plug do
       method: method,
       path: path,
       params: params,
-      tag: tag_name(ep.path)
+      tag: tag_name(ep.version)
     }
   end
 
   defp tag_name(nil), do: "DEFAULT"
-  defp tag_name([h]), do: h
-  defp tag_name(path), do: Enum.at(path, 1)
+  defp tag_name(v), do: "Version: #{v}"
 end
