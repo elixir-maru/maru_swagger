@@ -235,6 +235,43 @@ defmodule MaruSwagger.ParamsExtractorTest do
     end
   end
 
+  describe "get one-line nested list test" do
+    defmodule GetOneLineNestedList do
+      use Maru.Router
+
+      desc "one-line nested list test"
+
+      params do
+        requires :foo, type: List[String]
+      end
+
+      get "/path" do
+        conn |> json(params)
+      end
+    end
+
+    test "get one-line nested list test" do
+      route_info = route_from_module(GetOneLineNestedList, :get, ["path"])
+
+      assert [
+               %{
+                 description: "",
+                 in: "query",
+                 name: "foo",
+                 required: true,
+                 schema: %{
+                   type: "array",
+                   items: %{
+                     description: "",
+                     required: true,
+                     type: "string"
+                   }
+                 }
+               }
+             ] = extract_params(route_info)
+    end
+  end
+
   describe "validation in parameters test" do
     defmodule ValidationInParametes do
       use Maru.Router

@@ -5,7 +5,8 @@ defmodule MaruSwagger.ParamsExtractor do
   defmodule NonGetBodyParamsGenerator do
     def generate(param_list, path) do
       {path_param_list, body_param_list} =
-        param_list |> MaruSwagger.ParamsExtractor.filter_information()
+        param_list
+        |> MaruSwagger.ParamsExtractor.filter_information()
         |> Enum.split_with(&(&1.attr_name in path))
 
       [
@@ -93,10 +94,24 @@ defmodule MaruSwagger.ParamsExtractor do
     end
   end
 
-  alias Maru.Router
+  defmodule GetParamsGenerator do
+    def generate(param_list, path) do
+      for %PI{} = param <- param_list do
+        format_param(param, path)
+      end
+    end
 
-  def extract_params(%Router{method: :get, path: path, parameters: parameters}, _config) do
-    for %PI{} = param <- parameters do
+    defp format_param(%{type: {:list, _}} = param, _) do
+      %{
+        name: param.param_key,
+        description: param.desc || "",
+        required: param.required,
+        schema: do_format_param(param.type, param),
+        in: "query"
+      }
+    end
+
+    defp format_param(param, path) do
       %{
         name: param.param_key,
         description: param.desc || "",
@@ -105,6 +120,20 @@ defmodule MaruSwagger.ParamsExtractor do
         in: (param.attr_name in path && "path") || "query"
       }
     end
+
+    defp do_format_param({:list, type}, param) do
+      %{type: "array", items: do_format_param(type, param)}
+    end
+
+    defp do_format_param(type, param) do
+      %{description: param.desc || "", type: type, required: param.required}
+    end
+  end
+
+  alias Maru.Router
+
+  def extract_params(%Router{method: :get, path: path, parameters: parameters}, _config) do
+    GetParamsGenerator.generate(parameters, path)
   end
 
   def extract_params(%Router{method: :get}, _config), do: []
